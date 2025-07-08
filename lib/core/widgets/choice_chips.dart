@@ -8,7 +8,7 @@ class ChoiceChips extends StatelessWidget {
     required this.onChanged,
   });
   final List<String> choices;
-  final String selectedChoice;
+  final String? selectedChoice;
   final Function(String) onChanged;
 
   @override

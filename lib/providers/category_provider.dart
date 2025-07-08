@@ -51,10 +51,6 @@ class CategoryNotifier extends Notifier<CategoryState> {
     );
   }
 
-  void select(String category) {
-    state = state.copyWith(selectedCategory: category);
-  }
-
   void setSearching(bool searching) {
     state = state.copyWith(searching: searching);
   }
