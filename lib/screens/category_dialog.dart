@@ -11,10 +11,25 @@ class CategoryDialog extends ConsumerStatefulWidget {
 }
 
 class _CategoryDialogState extends ConsumerState<CategoryDialog> {
+  late TextEditingController categoryController;
   @override
   void initState() {
     super.initState();
     ref.read(categoryProvider.notifier).loadCategories();
+    categoryController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    categoryController.dispose();
+    super.dispose();
+  }
+
+  Future<void> addCategory(String category) async {
+    await ref.read(categoryProvider.notifier).addCategory(category);
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -22,7 +37,6 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
     final textTheme = Theme.of(context).textTheme;
     final notifier = ref.read(categoryProvider.notifier);
     final state = ref.watch(categoryProvider);
-    final categoryController = TextEditingController();
 
     return PopScope(
       canPop: false,
@@ -119,6 +133,11 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
                                 hintText: 'Category Name',
                                 border: OutlineInputBorder(),
                               ),
+                              onSubmitted: (value) {
+                                if (value.isNotEmpty) {
+                                  addCategory(value);
+                                }
+                              },
                             ),
                             SizedBox(height: 16),
                             Row(
@@ -126,8 +145,7 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      ref.read(categoryProvider.notifier).addCategory(categoryController.text);
-                                      Navigator.of(context).pop();
+                                      addCategory(categoryController.text);
                                     },
                                     child: Text('SAVE'),
                                   ),

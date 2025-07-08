@@ -40,7 +40,8 @@ class CategoryNotifier extends Notifier<CategoryState> {
     return categories;
   }
 
-  void addCategory(String category) {
+  Future<void> addCategory(String category) async {
+    await CategoryRepository().addCategory(category);
     state = state.copyWith(categories: [...state.categories, category]);
   }
 
