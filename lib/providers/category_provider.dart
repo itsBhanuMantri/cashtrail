@@ -5,23 +5,23 @@ import '../repositories/category_repository.dart';
 class CategoryState {
   final List<String> categories;
   final String? selectedCategory;
-  final bool shouldSearch;
+  final bool searching;
 
   CategoryState({
     required this.categories,
     this.selectedCategory,
-    this.shouldSearch = false,
+    this.searching = false,
   });
 
   CategoryState copyWith({
     List<String>? categories,
     String? selectedCategory,
-    bool? shouldSearch,
+    bool? searching,
   }) {
     return CategoryState(
       categories: categories ?? this.categories,
       selectedCategory: selectedCategory ?? this.selectedCategory,
-      shouldSearch: shouldSearch ?? this.shouldSearch,
+      searching: searching ?? this.searching,
     );
   }
 }
@@ -33,33 +33,33 @@ class CategoryNotifier extends Notifier<CategoryState> {
     return CategoryState(categories: [], selectedCategory: null);
   }
 
-  Future<List<String>> loadCategories() async {
+  Future<List<String>> fetchAll() async {
     final categories = await CategoryRepository().getCategories();
     _categories = categories;
     state = state.copyWith(categories: categories);
     return categories;
   }
 
-  Future<void> addCategory(String category) async {
+  Future<void> add(String category) async {
     await CategoryRepository().addCategory(category);
     state = state.copyWith(categories: [...state.categories, category]);
   }
 
-  void removeCategory(String category) {
+  void remove(String category) {
     state = state.copyWith(
       categories: state.categories.where((c) => c != category).toList(),
     );
   }
 
-  void selectCategory(String category) {
+  void select(String category) {
     state = state.copyWith(selectedCategory: category);
   }
 
-  void shouldSearchCategory(bool shouldSearch) {
-    state = state.copyWith(shouldSearch: shouldSearch);
+  void setSearching(bool searching) {
+    state = state.copyWith(searching: searching);
   }
 
-  void searchCategory(String query) {
+  void search(String query) {
     if (query.isEmpty) {
       state = state.copyWith(categories: _categories);
     }

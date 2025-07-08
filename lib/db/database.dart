@@ -4,10 +4,11 @@ import 'package:path_provider/path_provider.dart';
 
 import 'categories.dart';
 import 'ledger.dart';
+import 'people.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Ledger, Categories])
+@DriftDatabase(tables: [Ledger, Categories, People])
 class Database extends _$Database {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.

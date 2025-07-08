@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/category_provider.dart';
-import 'category_dialog.dart';
-import 'choice_chips.dart';
-
+import '../../core/widgets/category_dialog.dart';
+import '../../core/widgets/choice_chips.dart';
+import '../../core/widgets/custom_dropdown_field.dart';
+import '../../core/widgets/people_dialog.dart';
+import '../../providers/category_provider.dart';
+import '../../providers/people_provider.dart';
 
 class CashOutDialog extends ConsumerStatefulWidget {
   const CashOutDialog({super.key});
@@ -13,9 +15,9 @@ class CashOutDialog extends ConsumerStatefulWidget {
   @override
   ConsumerState<CashOutDialog> createState() => _CashOutDialogState();
 }
+
 class _CashOutDialogState extends ConsumerState<CashOutDialog> {
   String selectedChoice = 'PhonePe';
-  final categoryController = TextEditingController();
 
   void onChoiceChanged(String choice) {
     setState(() {
@@ -25,12 +27,7 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryState = ref.watch(categoryProvider);
     final textTheme = Theme.of(context).textTheme;
-    if (categoryState.selectedCategory != null) {
-      categoryController.text = categoryState.selectedCategory!;
-      print('coming here');
-    }
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(title: Text('CASH OUT')),
@@ -52,23 +49,11 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                   SizedBox(height: 24),
-
-                  TextField(
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      labelText: 'Category',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    controller: categoryController,
-                    readOnly: true,
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CategoryDialog()))
-                        .then((value) {
-                          if (value != null) {
-                            categoryController.text = value;
-                          }
-                        });
+                  CustomDropdownField(
+                    labelText: 'Category',
+                    optionsWidget: () => CategoryDialog(),
+                    onChanged: (value) {
+                      ref.read(categoryProvider.notifier).select(value);
                     },
                   ),
                   SizedBox(height: 24),
@@ -82,11 +67,12 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
                     ),
                   ),
                   SizedBox(height: 24),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Given to',
-                      border: OutlineInputBorder(),
-                    ),
+                  CustomDropdownField(
+                    labelText: 'Given to',
+                    optionsWidget: () => PeopleDialog(),
+                    onChanged: (value) {
+                      ref.read(peopleProvider.notifier).select(value);
+                    },
                   ),
                   SizedBox(height: 24),
                   Text('Payment Method', style: textTheme.titleSmall),
@@ -103,7 +89,9 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(onPressed: () {}, child: Text('SAVE')),
+                  child: ElevatedButton(onPressed: () {
+                    
+                  }, child: Text('SAVE')),
                 ),
               ],
             ),

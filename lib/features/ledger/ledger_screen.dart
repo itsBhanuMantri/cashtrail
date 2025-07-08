@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'cash_out_dialog.dart';
 import 'list_item.dart';
+import '../cash_out/cash_out_dialog.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class LedgerScreen extends StatelessWidget {
+  const LedgerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

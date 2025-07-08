@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/category_provider.dart';
+import '../../providers/category_provider.dart';
 
 class CategoryDialog extends ConsumerStatefulWidget {
   const CategoryDialog({super.key});
@@ -15,7 +15,7 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
   @override
   void initState() {
     super.initState();
-    ref.read(categoryProvider.notifier).loadCategories();
+    ref.read(categoryProvider.notifier).fetchAll();
     categoryController = TextEditingController();
   }
 
@@ -26,7 +26,7 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
   }
 
   Future<void> addCategory(String category) async {
-    await ref.read(categoryProvider.notifier).addCategory(category);
+    await ref.read(categoryProvider.notifier).add(category);
     if (mounted) {
       Navigator.of(context).pop();
     }
@@ -35,7 +35,6 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final notifier = ref.read(categoryProvider.notifier);
     final state = ref.watch(categoryProvider);
 
     return PopScope(
@@ -44,17 +43,17 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
         if (didPop) {
           return;
         }
-        if (!state.shouldSearch) {
+        if (!state.searching) {
           Navigator.of(context).pop();
         } else {
-          ref.read(categoryProvider.notifier).shouldSearchCategory(false);
+          ref.read(categoryProvider.notifier).setSearching(false);
         }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title:
-              state.shouldSearch
+              state.searching
                   ? TextField(
                     autofocus: true,
                     decoration: InputDecoration(
@@ -62,14 +61,14 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
                       border: InputBorder.none,
                     ),
                     onChanged: (value) {
-                      ref.read(categoryProvider.notifier).searchCategory(value);
+                      ref.read(categoryProvider.notifier).search(value);
                     },
                   )
                   : Text('Choose Category'),
           actions: [
             IconButton(
               onPressed: () {
-                ref.read(categoryProvider.notifier).shouldSearchCategory(true);
+                ref.read(categoryProvider.notifier).setSearching(true);
               },
               icon: Icon(Icons.search),
             ),
@@ -82,7 +81,6 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
                   value: option,
                   groupValue: state.selectedCategory,
                   onChanged: (value) {
-                    notifier.selectCategory(value!);
                     Navigator.of(context).pop(value);
                   },
                   child: Text(option),

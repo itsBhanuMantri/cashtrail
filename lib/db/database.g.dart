@@ -767,16 +767,182 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   }
 }
 
+class $PeopleTable extends People with TableInfo<$PeopleTable, PeopleData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PeopleTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _personMeta = const VerificationMeta('person');
+  @override
+  late final GeneratedColumn<String> person = GeneratedColumn<String>(
+    'person',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [person];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'people';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PeopleData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('person')) {
+      context.handle(
+        _personMeta,
+        person.isAcceptableOrUnknown(data['person']!, _personMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_personMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  PeopleData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PeopleData(
+      person:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}person'],
+          )!,
+    );
+  }
+
+  @override
+  $PeopleTable createAlias(String alias) {
+    return $PeopleTable(attachedDatabase, alias);
+  }
+}
+
+class PeopleData extends DataClass implements Insertable<PeopleData> {
+  final String person;
+  const PeopleData({required this.person});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['person'] = Variable<String>(person);
+    return map;
+  }
+
+  PeopleCompanion toCompanion(bool nullToAbsent) {
+    return PeopleCompanion(person: Value(person));
+  }
+
+  factory PeopleData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PeopleData(person: serializer.fromJson<String>(json['person']));
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{'person': serializer.toJson<String>(person)};
+  }
+
+  PeopleData copyWith({String? person}) =>
+      PeopleData(person: person ?? this.person);
+  PeopleData copyWithCompanion(PeopleCompanion data) {
+    return PeopleData(
+      person: data.person.present ? data.person.value : this.person,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PeopleData(')
+          ..write('person: $person')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => person.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PeopleData && other.person == this.person);
+}
+
+class PeopleCompanion extends UpdateCompanion<PeopleData> {
+  final Value<String> person;
+  final Value<int> rowid;
+  const PeopleCompanion({
+    this.person = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PeopleCompanion.insert({
+    required String person,
+    this.rowid = const Value.absent(),
+  }) : person = Value(person);
+  static Insertable<PeopleData> custom({
+    Expression<String>? person,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (person != null) 'person': person,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PeopleCompanion copyWith({Value<String>? person, Value<int>? rowid}) {
+    return PeopleCompanion(
+      person: person ?? this.person,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (person.present) {
+      map['person'] = Variable<String>(person.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PeopleCompanion(')
+          ..write('person: $person, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   $DatabaseManager get managers => $DatabaseManager(this);
   late final $LedgerTable ledger = $LedgerTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
+  late final $PeopleTable people = $PeopleTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [ledger, categories];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    ledger,
+    categories,
+    people,
+  ];
 }
 
 typedef $$LedgerTableCreateCompanionBuilder =
@@ -1185,6 +1351,117 @@ typedef $$CategoriesTableProcessedTableManager =
       Category,
       PrefetchHooks Function()
     >;
+typedef $$PeopleTableCreateCompanionBuilder =
+    PeopleCompanion Function({required String person, Value<int> rowid});
+typedef $$PeopleTableUpdateCompanionBuilder =
+    PeopleCompanion Function({Value<String> person, Value<int> rowid});
+
+class $$PeopleTableFilterComposer extends Composer<_$Database, $PeopleTable> {
+  $$PeopleTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get person => $composableBuilder(
+    column: $table.person,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PeopleTableOrderingComposer extends Composer<_$Database, $PeopleTable> {
+  $$PeopleTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get person => $composableBuilder(
+    column: $table.person,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PeopleTableAnnotationComposer
+    extends Composer<_$Database, $PeopleTable> {
+  $$PeopleTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get person =>
+      $composableBuilder(column: $table.person, builder: (column) => column);
+}
+
+class $$PeopleTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $PeopleTable,
+          PeopleData,
+          $$PeopleTableFilterComposer,
+          $$PeopleTableOrderingComposer,
+          $$PeopleTableAnnotationComposer,
+          $$PeopleTableCreateCompanionBuilder,
+          $$PeopleTableUpdateCompanionBuilder,
+          (PeopleData, BaseReferences<_$Database, $PeopleTable, PeopleData>),
+          PeopleData,
+          PrefetchHooks Function()
+        > {
+  $$PeopleTableTableManager(_$Database db, $PeopleTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$PeopleTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$PeopleTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$PeopleTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> person = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PeopleCompanion(person: person, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String person,
+                Value<int> rowid = const Value.absent(),
+              }) => PeopleCompanion.insert(person: person, rowid: rowid),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PeopleTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $PeopleTable,
+      PeopleData,
+      $$PeopleTableFilterComposer,
+      $$PeopleTableOrderingComposer,
+      $$PeopleTableAnnotationComposer,
+      $$PeopleTableCreateCompanionBuilder,
+      $$PeopleTableUpdateCompanionBuilder,
+      (PeopleData, BaseReferences<_$Database, $PeopleTable, PeopleData>),
+      PeopleData,
+      PrefetchHooks Function()
+    >;
 
 class $DatabaseManager {
   final _$Database _db;
@@ -1193,4 +1470,6 @@ class $DatabaseManager {
       $$LedgerTableTableManager(_db, _db.ledger);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db, _db.categories);
+  $$PeopleTableTableManager get people =>
+      $$PeopleTableTableManager(_db, _db.people);
 }
