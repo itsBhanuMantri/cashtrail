@@ -13,7 +13,9 @@ class CategoryRepository {
 
   Future<void> addCategory(String category) async {
     final db = Database();
-    await db.into(db.categories).insert(CategoriesCompanion(category: Value(category)));
+    await db
+        .into(db.categories)
+        .insert(CategoriesCompanion(category: Value(category)));
     print('Category added: $category');
   }
 }

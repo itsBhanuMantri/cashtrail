@@ -25,12 +25,22 @@ class LedgerScreen extends StatelessWidget {
             ),
           ),
           Container(
-            color: Colors.white,
             padding: const EdgeInsets.only(
               left: 16,
               right: 16,
               top: 16,
               bottom: 32,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black54.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                  offset: Offset(0, -1),
+                ),
+              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.max,

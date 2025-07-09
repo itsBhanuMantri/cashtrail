@@ -19,11 +19,12 @@ class MyApp extends StatelessWidget {
       title: 'Cash Trail',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        useMaterial3: true,
         brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.indigo,
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
             shape: RoundedRectangleBorder(
@@ -37,6 +38,16 @@ class MyApp extends StatelessWidget {
           labelStyle: textTheme.labelSmall,
         ),
         scaffoldBackgroundColor: const Color.fromARGB(255, 222, 222, 222),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
+          shadowColor: Colors.black.withValues(alpha: 1),
+          elevation: 4,
+          titleTextStyle: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       routerConfig: router,
     );

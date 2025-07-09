@@ -91,69 +91,75 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
           onPressed: () {
             showModalBottomSheet(
               context: context,
+              isScrollControlled: true,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
               ),
               builder: (context) {
-                return SizedBox(
-                  height: 240,
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Text(
-                              'Add New Category',
-                              style: textTheme.titleMedium,
-                            ),
-                          ),
-                          Spacer(),
-                          IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: Icon(Icons.close),
-                          ),
-                        ],
-                      ),
-                      Divider(height: 1),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: SizedBox(
+                    height: 240,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            TextField(
-                              autofocus: true,
-                              controller: categoryController,
-                              decoration: InputDecoration(
-                                hintText: 'Category Name',
-                                border: OutlineInputBorder(),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: Text(
+                                'Add New Category',
+                                style: textTheme.titleMedium,
                               ),
-                              onSubmitted: (value) {
-                                if (value.isNotEmpty) {
-                                  addCategory(value);
-                                }
-                              },
                             ),
-                            SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      addCategory(categoryController.text);
-                                    },
-                                    child: Text('SAVE'),
-                                  ),
-                                ),
-                              ],
+                            Spacer(),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: Icon(Icons.close),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        Divider(height: 1),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              TextField(
+                                autofocus: true,
+                                controller: categoryController,
+                                decoration: InputDecoration(
+                                  hintText: 'Category Name',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onSubmitted: (value) {
+                                  if (value.isNotEmpty) {
+                                    addCategory(value);
+                                  }
+                                },
+                              ),
+                              SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        addCategory(categoryController.text);
+                                      },
+                                      child: Text('SAVE'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

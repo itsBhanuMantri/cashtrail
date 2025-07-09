@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'category_dialog.dart';
-
+import 'clay_input_field.dart';
 
 class CustomDropdownField extends StatefulWidget {
   const CustomDropdownField({
@@ -17,6 +17,7 @@ class CustomDropdownField extends StatefulWidget {
   @override
   State<CustomDropdownField> createState() => _CustomDropdownFieldState();
 }
+
 class _CustomDropdownFieldState extends State<CustomDropdownField> {
   final controller = TextEditingController();
 
@@ -28,6 +29,25 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
 
   @override
   Widget build(BuildContext context) {
+    return ClayInputField(
+      labelText: widget.labelText,
+      controller: controller,
+      readOnly: true,
+      suffixIcon: Icon(Icons.arrow_drop_down),
+      onTap: () {
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(builder: (context) => widget.optionsWidget()),
+            )
+            .then((value) {
+              if (value != null) {
+                controller.text = value;
+                widget.onChanged(value);
+              }
+            });
+      },
+    );
+
     return TextField(
       autofocus: true,
       decoration: InputDecoration(
@@ -38,13 +58,16 @@ class _CustomDropdownFieldState extends State<CustomDropdownField> {
       controller: controller,
       readOnly: true,
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => widget.optionsWidget()))
-          .then((value) {
-            if (value != null) {
-              controller.text = value;
-              widget.onChanged(value);
-            }
-          });
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(builder: (context) => widget.optionsWidget()),
+            )
+            .then((value) {
+              if (value != null) {
+                controller.text = value;
+                widget.onChanged(value);
+              }
+            });
       },
     );
   }

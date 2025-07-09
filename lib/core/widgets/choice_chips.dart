@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 
 class ChoiceChips extends StatelessWidget {
   const ChoiceChips({
@@ -42,14 +43,58 @@ class MyChoiceChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     if (isSelected) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.indigo,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(1, 1),
+              blurRadius: 2,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: InnerShadow(
+          shadows: [
+            Shadow(
+              color: Colors.indigo.shade400,
+              blurRadius: 4,
+              offset: Offset(4, 4),
+            ),
+            Shadow(
+              color: Colors.indigo.shade800,
+              blurRadius: 4,
+              offset: Offset(-4, -4),
+            ),
+          ],
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.indigo,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Text(
+              choice,
+              style: textTheme.bodyMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      );
+
       return Material(
+        color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {},
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.teal,
+              color: Colors.indigo,
               borderRadius: BorderRadius.circular(16),
               // border: Border.all(color: Colors.teal, width: 2),
             ),
@@ -66,6 +111,7 @@ class MyChoiceChip extends StatelessWidget {
     }
 
     return Material(
+      color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
