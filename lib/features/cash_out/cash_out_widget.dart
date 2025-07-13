@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/components/app_button.dart';
+import '../../core/components/app_text_button.dart';
+import '../../core/components/app_text_field.dart';
+import '../../core/components/choice_chips.dart';
 import '../../core/config.dart';
-import '../../core/utils/custom_color.dart';
 import '../../core/widgets/category_dialog.dart';
-import '../../core/widgets/choice_chips.dart';
-import '../../core/widgets/clay_button.dart';
-import '../../core/widgets/clay_input_field.dart';
-import '../../core/widgets/custom_dropdown_field.dart';
-import '../../core/widgets/people_dialog.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/form_provider.dart';
-import '../../providers/people_provider.dart';
 
-class CashOutDialog extends ConsumerStatefulWidget {
-  const CashOutDialog({super.key});
+class CashOutWdiget extends ConsumerStatefulWidget {
+  const CashOutWdiget({super.key});
 
   @override
-  ConsumerState<CashOutDialog> createState() => _CashOutDialogState();
+  ConsumerState<CashOutWdiget> createState() => _CashOutWidgetState();
 }
 
-class _CashOutDialogState extends ConsumerState<CashOutDialog> {
+class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
   void onChoiceChanged(String choice) {
     ref.read(formProvider.notifier).setPaymentMethod(choice);
   }
@@ -49,8 +46,8 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
     final formState = ref.watch(formProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: Text('CASH OUT')),
+      backgroundColor: Color(0xffe8e8e8),
+      appBar: AppBar(title: Text('Cash Out')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -60,36 +57,55 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClayInputField(
+                    Text('Amount *', style: textTheme.labelSmall),
+                    SizedBox(height: 4),
+                    AppInputField(
                       labelText: 'Amount *',
+                      hintText: 'Amount',
                       controller: TextEditingController(),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       autofocus: true,
                     ),
                     SizedBox(height: 24),
-                    CustomDropdownField(
-                      labelText: 'Category',
-                      optionsWidget: () => CategoryDialog(),
-                      onChanged: (value) {},
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Text('Category *', style: textTheme.labelSmall),
+                          Spacer(),
+                          AppTextButton.small(
+                            onPressed: () {
+                              showCategoryModal(context).then((value) {
+                                if (value != null) {
+                                  ref
+                                      .read(categoryProvider.notifier)
+                                      .add(value);
+                                }
+                              });
+                            },
+                            labelText: '+ Add',
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 24),
-                    ClayInputField(
-                      labelText: 'Notes',
-                      autofocus: true,
-                      maxLines: 4,
-                      minLines: 1,
-                    ),
-                    SizedBox(height: 24),
-                    CustomDropdownField(
-                      labelText: 'Given to',
-                      optionsWidget: () => PeopleDialog(),
+                    ChoiceChips(
+                      choices: categoryState.categories,
+                      selectedChoice: formState.category,
                       onChanged: (value) {
-                        ref.read(peopleProvider.notifier).select(value);
+                        ref.read(formProvider.notifier).selectCategory(value);
                       },
                     ),
                     SizedBox(height: 24),
-                    Text('Payment Method', style: textTheme.titleSmall),
+                    Text('Notes', style: textTheme.labelSmall),
+                    SizedBox(height: 4),
+                    AppInputField(
+                      labelText: 'Notes',
+                      hintText: 'Notes',
+                      controller: TextEditingController(),
+                    ),
+                    SizedBox(height: 24),
+                    Text('Payment Method', style: textTheme.labelSmall),
                     SizedBox(height: 8),
                     ChoiceChips(
                       selectedChoice: formState.paymentMethod,
@@ -103,13 +119,7 @@ class _CashOutDialogState extends ConsumerState<CashOutDialog> {
             SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
-                  child: ClayButton(
-                    label: 'Save',
-                    onPressed: onSave,
-                    color: Colors.red,
-                  ),
-                ),
+                Expanded(child: AppButton(label: 'Save', onPressed: onSave)),
               ],
             ),
             SizedBox(height: 16),

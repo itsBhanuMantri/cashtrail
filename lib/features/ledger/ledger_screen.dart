@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'list_item.dart';
-import '../cash_out/cash_out_dialog.dart';
+import '../cash_out/cash_out_widget.dart';
 
 class LedgerScreen extends StatelessWidget {
   const LedgerScreen({super.key});
@@ -64,7 +64,7 @@ class LedgerScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => CashOutDialog(),
+                          builder: (context) => CashOutWdiget(),
                           fullscreenDialog: true,
                         ),
                       );
