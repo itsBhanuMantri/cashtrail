@@ -2,26 +2,30 @@ import 'package:drift/drift.dart';
 
 import '../db/database.dart';
 
+enum TransactionType { credit, debit }
+
 class LedgerRepository {
   LedgerRepository();
 
   Future<void> cashOut({
     required double amount,
     required String category,
+    required String subcategory,
     required String paymentMethod,
     String? notes,
-    String? givenTo,
   }) async {
     final db = Database();
+    final balance = await getBalance(TransactionType.debit, amount);
     await db
         .into(db.ledger)
         .insert(
           LedgerCompanion(
             credit: const Value(0),
             debit: Value(amount),
+            balance: Value(balance),
             category: Value(category),
+            subcategory: Value(subcategory),
             notes: Value(notes ?? ''),
-            givenTo: Value(givenTo ?? ''),
             paymentMethod: Value(paymentMethod),
           ),
         );
@@ -30,27 +34,44 @@ class LedgerRepository {
   Future<void> cashIn({
     required double amount,
     required String category,
+    required String subcategory,
     required String paymentMethod,
     String? notes,
-    String? receivedFrom,
   }) async {
     final db = Database();
+    final balance = await getBalance(TransactionType.credit, amount);
     await db
         .into(db.ledger)
         .insert(
           LedgerCompanion(
             credit: Value(amount),
             debit: const Value(0),
+            balance: Value(balance),
             category: Value(category),
+            subcategory: Value(subcategory),
             notes: Value(notes ?? ''),
-            receivedFrom: Value(receivedFrom ?? ''),
             paymentMethod: Value(paymentMethod),
           ),
         );
   }
 
-  double _getBalance() {
-    final balance = 0;
-    return 0;
+  Future<double> getBalance(TransactionType type, double amount) async {
+    final db = Database();
+    final rows = await db.select(db.ledger).get();
+    double totalCredits = rows
+        .where((row) => row.credit > 0)
+        .fold(0, (sum, row) => sum + row.credit);
+    double totalDebits = rows
+        .where((row) => row.debit > 0)
+        .fold(0, (sum, row) => sum + row.debit);
+
+    if (type == TransactionType.credit) {
+      totalCredits += amount;
+    } else {
+      totalDebits += amount;
+    }
+
+    final double balance = totalCredits - totalDebits;
+    return balance;
   }
 }

@@ -16,6 +16,7 @@ class AppInputField extends StatefulWidget {
   final Widget? suffixIcon;
   final Function(String)? onSubmitted;
   final TextInputAction? textInputAction;
+  final Function(String)? onChanged;
 
   const AppInputField({
     super.key,
@@ -33,6 +34,7 @@ class AppInputField extends StatefulWidget {
     this.suffixIcon,
     this.onSubmitted,
     this.textInputAction,
+    this.onChanged,
   });
 
   @override
@@ -103,6 +105,7 @@ class _AppInputFieldState extends State<AppInputField> {
                         print('bhanu onSubmitted $value');
                         widget.onSubmitted?.call(value);
                       },
+                      onChanged: widget.onChanged,
                       decoration: InputDecoration(
                         isDense: true,
                         hintStyle: TextStyle(color: Colors.grey),

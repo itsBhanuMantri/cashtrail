@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 
 class ChoiceChips extends StatelessWidget {
   const ChoiceChips({
@@ -14,6 +13,12 @@ class ChoiceChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('bhanu: choices $choices');
+    if (choices.isEmpty) {
+      return SizedBox.shrink();
+    }
+    print('bhanu: coming here ${choices.length}');
+    print('bhanu: coming here ${choices[0]}');
     return Wrap(
       spacing: 8,
       children: [

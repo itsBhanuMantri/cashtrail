@@ -11,14 +11,14 @@ import '../../core/widgets/category_modal.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/form_provider.dart';
 
-class CashOutWdiget extends ConsumerStatefulWidget {
-  const CashOutWdiget({super.key});
+class CashInWidget extends ConsumerStatefulWidget {
+  const CashInWidget({super.key});
 
   @override
-  ConsumerState<CashOutWdiget> createState() => _CashOutWidgetState();
+  ConsumerState<CashInWidget> createState() => _CashInWidgetState();
 }
 
-class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
+class _CashInWidgetState extends ConsumerState<CashInWidget> {
   void onChoiceChanged(String choice) {
     ref.read(formProvider.notifier).setPaymentMethod(choice);
   }
@@ -54,7 +54,7 @@ class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
       return;
     }
 
-    await ref.read(formProvider.notifier).cashOut();
+    await ref.read(formProvider.notifier).cashIn();
     if (mounted && Navigator.canPop(context)) {
       Navigator.pop(context);
     }

@@ -1,26 +1,33 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
+import '../../providers/ledger_provider.dart';
+import '../cash_in/cash_in_widget.dart';
+import 'cash_summary.dart';
 import 'list_item.dart';
 import '../cash_out/cash_out_widget.dart';
 
-class LedgerScreen extends StatelessWidget {
+class LedgerScreen extends ConsumerWidget {
   const LedgerScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ledgerState = ref.watch(ledgerProvider);
+    final items = ledgerState.valueOrNull ?? [];
     return Scaffold(
       appBar: AppBar(title: const Text('Cash Trail')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(padding: const EdgeInsets.all(16.0), child: CashSummary()),
           Expanded(
             child: ListView.separated(
-              itemCount: 15,
+              itemCount: items.length,
               separatorBuilder: (context, index) {
                 return Container(height: 8);
               },
               itemBuilder: (context, index) {
-                return ListItem();
+                return ListItem(data: items[index]);
               },
             ),
           ),
@@ -29,7 +36,7 @@ class LedgerScreen extends StatelessWidget {
               left: 16,
               right: 16,
               top: 16,
-              bottom: 32,
+              bottom: 16,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -47,7 +54,11 @@ class LedgerScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => CashInWidget()),
+                      );
+                    },
                     style: Theme.of(
                       context,
                     ).elevatedButtonTheme.style?.copyWith(
@@ -65,7 +76,6 @@ class LedgerScreen extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => CashOutWdiget(),
-                          fullscreenDialog: true,
                         ),
                       );
                     },

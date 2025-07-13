@@ -5,11 +5,9 @@ class Ledger extends Table {
   RealColumn get credit => real().withDefault(const Constant(0))();
   RealColumn get debit => real().withDefault(const Constant(0))();
   RealColumn get balance => real().withDefault(const Constant(0))();
-  TextColumn get category => text().nullable()();
-  TextColumn get notes => text().nullable()();
-  TextColumn get receivedFrom => text().withDefault(const Constant(''))();
-  TextColumn get givenTo => text().withDefault(const Constant(''))();
+  TextColumn get category => text().withDefault(const Constant(''))();
+  TextColumn get subcategory => text().withDefault(const Constant(''))();
+  TextColumn get notes => text().withDefault(const Constant(''))();
   TextColumn get paymentMethod => text().withDefault(const Constant(''))();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(Constant(DateTime.now()))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

@@ -60,37 +60,27 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
   late final GeneratedColumn<String> category = GeneratedColumn<String>(
     'category',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
-  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
-  @override
-  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
-    'notes',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _receivedFromMeta = const VerificationMeta(
-    'receivedFrom',
+  static const VerificationMeta _subcategoryMeta = const VerificationMeta(
+    'subcategory',
   );
   @override
-  late final GeneratedColumn<String> receivedFrom = GeneratedColumn<String>(
-    'received_from',
+  late final GeneratedColumn<String> subcategory = GeneratedColumn<String>(
+    'subcategory',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _givenToMeta = const VerificationMeta(
-    'givenTo',
-  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
-  late final GeneratedColumn<String> givenTo = GeneratedColumn<String>(
-    'given_to',
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -128,9 +118,8 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
     debit,
     balance,
     category,
+    subcategory,
     notes,
-    receivedFrom,
-    givenTo,
     paymentMethod,
     createdAt,
   ];
@@ -173,25 +162,19 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
         category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
       );
     }
+    if (data.containsKey('subcategory')) {
+      context.handle(
+        _subcategoryMeta,
+        subcategory.isAcceptableOrUnknown(
+          data['subcategory']!,
+          _subcategoryMeta,
+        ),
+      );
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
         notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
-      );
-    }
-    if (data.containsKey('received_from')) {
-      context.handle(
-        _receivedFromMeta,
-        receivedFrom.isAcceptableOrUnknown(
-          data['received_from']!,
-          _receivedFromMeta,
-        ),
-      );
-    }
-    if (data.containsKey('given_to')) {
-      context.handle(
-        _givenToMeta,
-        givenTo.isAcceptableOrUnknown(data['given_to']!, _givenToMeta),
       );
     }
     if (data.containsKey('payment_method')) {
@@ -238,23 +221,20 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
             DriftSqlType.double,
             data['${effectivePrefix}balance'],
           )!,
-      category: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}category'],
-      ),
-      notes: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}notes'],
-      ),
-      receivedFrom:
+      category:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
-            data['${effectivePrefix}received_from'],
+            data['${effectivePrefix}category'],
           )!,
-      givenTo:
+      subcategory:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
-            data['${effectivePrefix}given_to'],
+            data['${effectivePrefix}subcategory'],
+          )!,
+      notes:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}notes'],
           )!,
       paymentMethod:
           attachedDatabase.typeMapping.read(
@@ -280,10 +260,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
   final double credit;
   final double debit;
   final double balance;
-  final String? category;
-  final String? notes;
-  final String receivedFrom;
-  final String givenTo;
+  final String category;
+  final String subcategory;
+  final String notes;
   final String paymentMethod;
   final DateTime createdAt;
   const LedgerData({
@@ -291,10 +270,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     required this.credit,
     required this.debit,
     required this.balance,
-    this.category,
-    this.notes,
-    required this.receivedFrom,
-    required this.givenTo,
+    required this.category,
+    required this.subcategory,
+    required this.notes,
     required this.paymentMethod,
     required this.createdAt,
   });
@@ -305,14 +283,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     map['credit'] = Variable<double>(credit);
     map['debit'] = Variable<double>(debit);
     map['balance'] = Variable<double>(balance);
-    if (!nullToAbsent || category != null) {
-      map['category'] = Variable<String>(category);
-    }
-    if (!nullToAbsent || notes != null) {
-      map['notes'] = Variable<String>(notes);
-    }
-    map['received_from'] = Variable<String>(receivedFrom);
-    map['given_to'] = Variable<String>(givenTo);
+    map['category'] = Variable<String>(category);
+    map['subcategory'] = Variable<String>(subcategory);
+    map['notes'] = Variable<String>(notes);
     map['payment_method'] = Variable<String>(paymentMethod);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -324,14 +297,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       credit: Value(credit),
       debit: Value(debit),
       balance: Value(balance),
-      category:
-          category == null && nullToAbsent
-              ? const Value.absent()
-              : Value(category),
-      notes:
-          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
-      receivedFrom: Value(receivedFrom),
-      givenTo: Value(givenTo),
+      category: Value(category),
+      subcategory: Value(subcategory),
+      notes: Value(notes),
       paymentMethod: Value(paymentMethod),
       createdAt: Value(createdAt),
     );
@@ -347,10 +315,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       credit: serializer.fromJson<double>(json['credit']),
       debit: serializer.fromJson<double>(json['debit']),
       balance: serializer.fromJson<double>(json['balance']),
-      category: serializer.fromJson<String?>(json['category']),
-      notes: serializer.fromJson<String?>(json['notes']),
-      receivedFrom: serializer.fromJson<String>(json['receivedFrom']),
-      givenTo: serializer.fromJson<String>(json['givenTo']),
+      category: serializer.fromJson<String>(json['category']),
+      subcategory: serializer.fromJson<String>(json['subcategory']),
+      notes: serializer.fromJson<String>(json['notes']),
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -363,10 +330,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       'credit': serializer.toJson<double>(credit),
       'debit': serializer.toJson<double>(debit),
       'balance': serializer.toJson<double>(balance),
-      'category': serializer.toJson<String?>(category),
-      'notes': serializer.toJson<String?>(notes),
-      'receivedFrom': serializer.toJson<String>(receivedFrom),
-      'givenTo': serializer.toJson<String>(givenTo),
+      'category': serializer.toJson<String>(category),
+      'subcategory': serializer.toJson<String>(subcategory),
+      'notes': serializer.toJson<String>(notes),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -377,10 +343,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     double? credit,
     double? debit,
     double? balance,
-    Value<String?> category = const Value.absent(),
-    Value<String?> notes = const Value.absent(),
-    String? receivedFrom,
-    String? givenTo,
+    String? category,
+    String? subcategory,
+    String? notes,
     String? paymentMethod,
     DateTime? createdAt,
   }) => LedgerData(
@@ -388,10 +353,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     credit: credit ?? this.credit,
     debit: debit ?? this.debit,
     balance: balance ?? this.balance,
-    category: category.present ? category.value : this.category,
-    notes: notes.present ? notes.value : this.notes,
-    receivedFrom: receivedFrom ?? this.receivedFrom,
-    givenTo: givenTo ?? this.givenTo,
+    category: category ?? this.category,
+    subcategory: subcategory ?? this.subcategory,
+    notes: notes ?? this.notes,
     paymentMethod: paymentMethod ?? this.paymentMethod,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -402,12 +366,9 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       debit: data.debit.present ? data.debit.value : this.debit,
       balance: data.balance.present ? data.balance.value : this.balance,
       category: data.category.present ? data.category.value : this.category,
+      subcategory:
+          data.subcategory.present ? data.subcategory.value : this.subcategory,
       notes: data.notes.present ? data.notes.value : this.notes,
-      receivedFrom:
-          data.receivedFrom.present
-              ? data.receivedFrom.value
-              : this.receivedFrom,
-      givenTo: data.givenTo.present ? data.givenTo.value : this.givenTo,
       paymentMethod:
           data.paymentMethod.present
               ? data.paymentMethod.value
@@ -424,9 +385,8 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
           ..write('debit: $debit, ')
           ..write('balance: $balance, ')
           ..write('category: $category, ')
+          ..write('subcategory: $subcategory, ')
           ..write('notes: $notes, ')
-          ..write('receivedFrom: $receivedFrom, ')
-          ..write('givenTo: $givenTo, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -440,9 +400,8 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     debit,
     balance,
     category,
+    subcategory,
     notes,
-    receivedFrom,
-    givenTo,
     paymentMethod,
     createdAt,
   );
@@ -455,9 +414,8 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
           other.debit == this.debit &&
           other.balance == this.balance &&
           other.category == this.category &&
+          other.subcategory == this.subcategory &&
           other.notes == this.notes &&
-          other.receivedFrom == this.receivedFrom &&
-          other.givenTo == this.givenTo &&
           other.paymentMethod == this.paymentMethod &&
           other.createdAt == this.createdAt);
 }
@@ -467,10 +425,9 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
   final Value<double> credit;
   final Value<double> debit;
   final Value<double> balance;
-  final Value<String?> category;
-  final Value<String?> notes;
-  final Value<String> receivedFrom;
-  final Value<String> givenTo;
+  final Value<String> category;
+  final Value<String> subcategory;
+  final Value<String> notes;
   final Value<String> paymentMethod;
   final Value<DateTime> createdAt;
   const LedgerCompanion({
@@ -479,9 +436,8 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     this.debit = const Value.absent(),
     this.balance = const Value.absent(),
     this.category = const Value.absent(),
+    this.subcategory = const Value.absent(),
     this.notes = const Value.absent(),
-    this.receivedFrom = const Value.absent(),
-    this.givenTo = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
@@ -491,9 +447,8 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     this.debit = const Value.absent(),
     this.balance = const Value.absent(),
     this.category = const Value.absent(),
+    this.subcategory = const Value.absent(),
     this.notes = const Value.absent(),
-    this.receivedFrom = const Value.absent(),
-    this.givenTo = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
@@ -503,9 +458,8 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     Expression<double>? debit,
     Expression<double>? balance,
     Expression<String>? category,
+    Expression<String>? subcategory,
     Expression<String>? notes,
-    Expression<String>? receivedFrom,
-    Expression<String>? givenTo,
     Expression<String>? paymentMethod,
     Expression<DateTime>? createdAt,
   }) {
@@ -515,9 +469,8 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
       if (debit != null) 'debit': debit,
       if (balance != null) 'balance': balance,
       if (category != null) 'category': category,
+      if (subcategory != null) 'subcategory': subcategory,
       if (notes != null) 'notes': notes,
-      if (receivedFrom != null) 'received_from': receivedFrom,
-      if (givenTo != null) 'given_to': givenTo,
       if (paymentMethod != null) 'payment_method': paymentMethod,
       if (createdAt != null) 'created_at': createdAt,
     });
@@ -528,10 +481,9 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     Value<double>? credit,
     Value<double>? debit,
     Value<double>? balance,
-    Value<String?>? category,
-    Value<String?>? notes,
-    Value<String>? receivedFrom,
-    Value<String>? givenTo,
+    Value<String>? category,
+    Value<String>? subcategory,
+    Value<String>? notes,
     Value<String>? paymentMethod,
     Value<DateTime>? createdAt,
   }) {
@@ -541,9 +493,8 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
       debit: debit ?? this.debit,
       balance: balance ?? this.balance,
       category: category ?? this.category,
+      subcategory: subcategory ?? this.subcategory,
       notes: notes ?? this.notes,
-      receivedFrom: receivedFrom ?? this.receivedFrom,
-      givenTo: givenTo ?? this.givenTo,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -567,14 +518,11 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     if (category.present) {
       map['category'] = Variable<String>(category.value);
     }
+    if (subcategory.present) {
+      map['subcategory'] = Variable<String>(subcategory.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
-    }
-    if (receivedFrom.present) {
-      map['received_from'] = Variable<String>(receivedFrom.value);
-    }
-    if (givenTo.present) {
-      map['given_to'] = Variable<String>(givenTo.value);
     }
     if (paymentMethod.present) {
       map['payment_method'] = Variable<String>(paymentMethod.value);
@@ -593,9 +541,8 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
           ..write('debit: $debit, ')
           ..write('balance: $balance, ')
           ..write('category: $category, ')
+          ..write('subcategory: $subcategory, ')
           ..write('notes: $notes, ')
-          ..write('receivedFrom: $receivedFrom, ')
-          ..write('givenTo: $givenTo, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -621,8 +568,20 @@ class $CategoriesTable extends Categories
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
+  static const VerificationMeta _subcategoryMeta = const VerificationMeta(
+    'subcategory',
+  );
   @override
-  List<GeneratedColumn> get $columns => [category];
+  late final GeneratedColumn<String> subcategory = GeneratedColumn<String>(
+    'subcategory',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [category, subcategory];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -643,6 +602,15 @@ class $CategoriesTable extends Categories
     } else if (isInserting) {
       context.missing(_categoryMeta);
     }
+    if (data.containsKey('subcategory')) {
+      context.handle(
+        _subcategoryMeta,
+        subcategory.isAcceptableOrUnknown(
+          data['subcategory']!,
+          _subcategoryMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -657,6 +625,11 @@ class $CategoriesTable extends Categories
             DriftSqlType.string,
             data['${effectivePrefix}category'],
           )!,
+      subcategory:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}subcategory'],
+          )!,
     );
   }
 
@@ -668,16 +641,21 @@ class $CategoriesTable extends Categories
 
 class Category extends DataClass implements Insertable<Category> {
   final String category;
-  const Category({required this.category});
+  final String subcategory;
+  const Category({required this.category, required this.subcategory});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['category'] = Variable<String>(category);
+    map['subcategory'] = Variable<String>(subcategory);
     return map;
   }
 
   CategoriesCompanion toCompanion(bool nullToAbsent) {
-    return CategoriesCompanion(category: Value(category));
+    return CategoriesCompanion(
+      category: Value(category),
+      subcategory: Value(subcategory),
+    );
   }
 
   factory Category.fromJson(
@@ -685,62 +663,85 @@ class Category extends DataClass implements Insertable<Category> {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Category(category: serializer.fromJson<String>(json['category']));
+    return Category(
+      category: serializer.fromJson<String>(json['category']),
+      subcategory: serializer.fromJson<String>(json['subcategory']),
+    );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{'category': serializer.toJson<String>(category)};
+    return <String, dynamic>{
+      'category': serializer.toJson<String>(category),
+      'subcategory': serializer.toJson<String>(subcategory),
+    };
   }
 
-  Category copyWith({String? category}) =>
-      Category(category: category ?? this.category);
+  Category copyWith({String? category, String? subcategory}) => Category(
+    category: category ?? this.category,
+    subcategory: subcategory ?? this.subcategory,
+  );
   Category copyWithCompanion(CategoriesCompanion data) {
     return Category(
       category: data.category.present ? data.category.value : this.category,
+      subcategory:
+          data.subcategory.present ? data.subcategory.value : this.subcategory,
     );
   }
 
   @override
   String toString() {
     return (StringBuffer('Category(')
-          ..write('category: $category')
+          ..write('category: $category, ')
+          ..write('subcategory: $subcategory')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => category.hashCode;
+  int get hashCode => Object.hash(category, subcategory);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Category && other.category == this.category);
+      (other is Category &&
+          other.category == this.category &&
+          other.subcategory == this.subcategory);
 }
 
 class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<String> category;
+  final Value<String> subcategory;
   final Value<int> rowid;
   const CategoriesCompanion({
     this.category = const Value.absent(),
+    this.subcategory = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CategoriesCompanion.insert({
     required String category,
+    this.subcategory = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : category = Value(category);
   static Insertable<Category> custom({
     Expression<String>? category,
+    Expression<String>? subcategory,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (category != null) 'category': category,
+      if (subcategory != null) 'subcategory': subcategory,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  CategoriesCompanion copyWith({Value<String>? category, Value<int>? rowid}) {
+  CategoriesCompanion copyWith({
+    Value<String>? category,
+    Value<String>? subcategory,
+    Value<int>? rowid,
+  }) {
     return CategoriesCompanion(
       category: category ?? this.category,
+      subcategory: subcategory ?? this.subcategory,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -750,6 +751,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     final map = <String, Expression>{};
     if (category.present) {
       map['category'] = Variable<String>(category.value);
+    }
+    if (subcategory.present) {
+      map['subcategory'] = Variable<String>(subcategory.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -761,167 +765,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   String toString() {
     return (StringBuffer('CategoriesCompanion(')
           ..write('category: $category, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $PeopleTable extends People with TableInfo<$PeopleTable, PeopleData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PeopleTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _personMeta = const VerificationMeta('person');
-  @override
-  late final GeneratedColumn<String> person = GeneratedColumn<String>(
-    'person',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [person];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'people';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<PeopleData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('person')) {
-      context.handle(
-        _personMeta,
-        person.isAcceptableOrUnknown(data['person']!, _personMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_personMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => const {};
-  @override
-  PeopleData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PeopleData(
-      person:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}person'],
-          )!,
-    );
-  }
-
-  @override
-  $PeopleTable createAlias(String alias) {
-    return $PeopleTable(attachedDatabase, alias);
-  }
-}
-
-class PeopleData extends DataClass implements Insertable<PeopleData> {
-  final String person;
-  const PeopleData({required this.person});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['person'] = Variable<String>(person);
-    return map;
-  }
-
-  PeopleCompanion toCompanion(bool nullToAbsent) {
-    return PeopleCompanion(person: Value(person));
-  }
-
-  factory PeopleData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PeopleData(person: serializer.fromJson<String>(json['person']));
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{'person': serializer.toJson<String>(person)};
-  }
-
-  PeopleData copyWith({String? person}) =>
-      PeopleData(person: person ?? this.person);
-  PeopleData copyWithCompanion(PeopleCompanion data) {
-    return PeopleData(
-      person: data.person.present ? data.person.value : this.person,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PeopleData(')
-          ..write('person: $person')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => person.hashCode;
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PeopleData && other.person == this.person);
-}
-
-class PeopleCompanion extends UpdateCompanion<PeopleData> {
-  final Value<String> person;
-  final Value<int> rowid;
-  const PeopleCompanion({
-    this.person = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  PeopleCompanion.insert({
-    required String person,
-    this.rowid = const Value.absent(),
-  }) : person = Value(person);
-  static Insertable<PeopleData> custom({
-    Expression<String>? person,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (person != null) 'person': person,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  PeopleCompanion copyWith({Value<String>? person, Value<int>? rowid}) {
-    return PeopleCompanion(
-      person: person ?? this.person,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (person.present) {
-      map['person'] = Variable<String>(person.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PeopleCompanion(')
-          ..write('person: $person, ')
+          ..write('subcategory: $subcategory, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -933,16 +777,11 @@ abstract class _$Database extends GeneratedDatabase {
   $DatabaseManager get managers => $DatabaseManager(this);
   late final $LedgerTable ledger = $LedgerTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
-  late final $PeopleTable people = $PeopleTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [
-    ledger,
-    categories,
-    people,
-  ];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [ledger, categories];
 }
 
 typedef $$LedgerTableCreateCompanionBuilder =
@@ -951,10 +790,9 @@ typedef $$LedgerTableCreateCompanionBuilder =
       Value<double> credit,
       Value<double> debit,
       Value<double> balance,
-      Value<String?> category,
-      Value<String?> notes,
-      Value<String> receivedFrom,
-      Value<String> givenTo,
+      Value<String> category,
+      Value<String> subcategory,
+      Value<String> notes,
       Value<String> paymentMethod,
       Value<DateTime> createdAt,
     });
@@ -964,10 +802,9 @@ typedef $$LedgerTableUpdateCompanionBuilder =
       Value<double> credit,
       Value<double> debit,
       Value<double> balance,
-      Value<String?> category,
-      Value<String?> notes,
-      Value<String> receivedFrom,
-      Value<String> givenTo,
+      Value<String> category,
+      Value<String> subcategory,
+      Value<String> notes,
       Value<String> paymentMethod,
       Value<DateTime> createdAt,
     });
@@ -1005,18 +842,13 @@ class $$LedgerTableFilterComposer extends Composer<_$Database, $LedgerTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get subcategory => $composableBuilder(
+    column: $table.subcategory,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get receivedFrom => $composableBuilder(
-    column: $table.receivedFrom,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get givenTo => $composableBuilder(
-    column: $table.givenTo,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1064,18 +896,13 @@ class $$LedgerTableOrderingComposer extends Composer<_$Database, $LedgerTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get subcategory => $composableBuilder(
+    column: $table.subcategory,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get receivedFrom => $composableBuilder(
-    column: $table.receivedFrom,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get givenTo => $composableBuilder(
-    column: $table.givenTo,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1114,16 +941,13 @@ class $$LedgerTableAnnotationComposer
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
 
-  GeneratedColumn<String> get notes =>
-      $composableBuilder(column: $table.notes, builder: (column) => column);
-
-  GeneratedColumn<String> get receivedFrom => $composableBuilder(
-    column: $table.receivedFrom,
+  GeneratedColumn<String> get subcategory => $composableBuilder(
+    column: $table.subcategory,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get givenTo =>
-      $composableBuilder(column: $table.givenTo, builder: (column) => column);
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
 
   GeneratedColumn<String> get paymentMethod => $composableBuilder(
     column: $table.paymentMethod,
@@ -1166,10 +990,9 @@ class $$LedgerTableTableManager
                 Value<double> credit = const Value.absent(),
                 Value<double> debit = const Value.absent(),
                 Value<double> balance = const Value.absent(),
-                Value<String?> category = const Value.absent(),
-                Value<String?> notes = const Value.absent(),
-                Value<String> receivedFrom = const Value.absent(),
-                Value<String> givenTo = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> subcategory = const Value.absent(),
+                Value<String> notes = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => LedgerCompanion(
@@ -1178,9 +1001,8 @@ class $$LedgerTableTableManager
                 debit: debit,
                 balance: balance,
                 category: category,
+                subcategory: subcategory,
                 notes: notes,
-                receivedFrom: receivedFrom,
-                givenTo: givenTo,
                 paymentMethod: paymentMethod,
                 createdAt: createdAt,
               ),
@@ -1190,10 +1012,9 @@ class $$LedgerTableTableManager
                 Value<double> credit = const Value.absent(),
                 Value<double> debit = const Value.absent(),
                 Value<double> balance = const Value.absent(),
-                Value<String?> category = const Value.absent(),
-                Value<String?> notes = const Value.absent(),
-                Value<String> receivedFrom = const Value.absent(),
-                Value<String> givenTo = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> subcategory = const Value.absent(),
+                Value<String> notes = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => LedgerCompanion.insert(
@@ -1202,9 +1023,8 @@ class $$LedgerTableTableManager
                 debit: debit,
                 balance: balance,
                 category: category,
+                subcategory: subcategory,
                 notes: notes,
-                receivedFrom: receivedFrom,
-                givenTo: givenTo,
                 paymentMethod: paymentMethod,
                 createdAt: createdAt,
               ),
@@ -1238,9 +1058,17 @@ typedef $$LedgerTableProcessedTableManager =
       PrefetchHooks Function()
     >;
 typedef $$CategoriesTableCreateCompanionBuilder =
-    CategoriesCompanion Function({required String category, Value<int> rowid});
+    CategoriesCompanion Function({
+      required String category,
+      Value<String> subcategory,
+      Value<int> rowid,
+    });
 typedef $$CategoriesTableUpdateCompanionBuilder =
-    CategoriesCompanion Function({Value<String> category, Value<int> rowid});
+    CategoriesCompanion Function({
+      Value<String> category,
+      Value<String> subcategory,
+      Value<int> rowid,
+    });
 
 class $$CategoriesTableFilterComposer
     extends Composer<_$Database, $CategoriesTable> {
@@ -1253,6 +1081,11 @@ class $$CategoriesTableFilterComposer
   });
   ColumnFilters<String> get category => $composableBuilder(
     column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get subcategory => $composableBuilder(
+    column: $table.subcategory,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1270,6 +1103,11 @@ class $$CategoriesTableOrderingComposer
     column: $table.category,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get subcategory => $composableBuilder(
+    column: $table.subcategory,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CategoriesTableAnnotationComposer
@@ -1283,6 +1121,11 @@ class $$CategoriesTableAnnotationComposer
   });
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get subcategory => $composableBuilder(
+    column: $table.subcategory,
+    builder: (column) => column,
+  );
 }
 
 class $$CategoriesTableTableManager
@@ -1314,14 +1157,23 @@ class $$CategoriesTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> category = const Value.absent(),
+                Value<String> subcategory = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => CategoriesCompanion(category: category, rowid: rowid),
+              }) => CategoriesCompanion(
+                category: category,
+                subcategory: subcategory,
+                rowid: rowid,
+              ),
           createCompanionCallback:
               ({
                 required String category,
+                Value<String> subcategory = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) =>
-                  CategoriesCompanion.insert(category: category, rowid: rowid),
+              }) => CategoriesCompanion.insert(
+                category: category,
+                subcategory: subcategory,
+                rowid: rowid,
+              ),
           withReferenceMapper:
               (p0) =>
                   p0
@@ -1351,117 +1203,6 @@ typedef $$CategoriesTableProcessedTableManager =
       Category,
       PrefetchHooks Function()
     >;
-typedef $$PeopleTableCreateCompanionBuilder =
-    PeopleCompanion Function({required String person, Value<int> rowid});
-typedef $$PeopleTableUpdateCompanionBuilder =
-    PeopleCompanion Function({Value<String> person, Value<int> rowid});
-
-class $$PeopleTableFilterComposer extends Composer<_$Database, $PeopleTable> {
-  $$PeopleTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get person => $composableBuilder(
-    column: $table.person,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$PeopleTableOrderingComposer extends Composer<_$Database, $PeopleTable> {
-  $$PeopleTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get person => $composableBuilder(
-    column: $table.person,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$PeopleTableAnnotationComposer
-    extends Composer<_$Database, $PeopleTable> {
-  $$PeopleTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get person =>
-      $composableBuilder(column: $table.person, builder: (column) => column);
-}
-
-class $$PeopleTableTableManager
-    extends
-        RootTableManager<
-          _$Database,
-          $PeopleTable,
-          PeopleData,
-          $$PeopleTableFilterComposer,
-          $$PeopleTableOrderingComposer,
-          $$PeopleTableAnnotationComposer,
-          $$PeopleTableCreateCompanionBuilder,
-          $$PeopleTableUpdateCompanionBuilder,
-          (PeopleData, BaseReferences<_$Database, $PeopleTable, PeopleData>),
-          PeopleData,
-          PrefetchHooks Function()
-        > {
-  $$PeopleTableTableManager(_$Database db, $PeopleTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer:
-              () => $$PeopleTableFilterComposer($db: db, $table: table),
-          createOrderingComposer:
-              () => $$PeopleTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer:
-              () => $$PeopleTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> person = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PeopleCompanion(person: person, rowid: rowid),
-          createCompanionCallback:
-              ({
-                required String person,
-                Value<int> rowid = const Value.absent(),
-              }) => PeopleCompanion.insert(person: person, rowid: rowid),
-          withReferenceMapper:
-              (p0) =>
-                  p0
-                      .map(
-                        (e) => (
-                          e.readTable(table),
-                          BaseReferences(db, table, e),
-                        ),
-                      )
-                      .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$PeopleTableProcessedTableManager =
-    ProcessedTableManager<
-      _$Database,
-      $PeopleTable,
-      PeopleData,
-      $$PeopleTableFilterComposer,
-      $$PeopleTableOrderingComposer,
-      $$PeopleTableAnnotationComposer,
-      $$PeopleTableCreateCompanionBuilder,
-      $$PeopleTableUpdateCompanionBuilder,
-      (PeopleData, BaseReferences<_$Database, $PeopleTable, PeopleData>),
-      PeopleData,
-      PrefetchHooks Function()
-    >;
 
 class $DatabaseManager {
   final _$Database _db;
@@ -1470,6 +1211,4 @@ class $DatabaseManager {
       $$LedgerTableTableManager(_db, _db.ledger);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db, _db.categories);
-  $$PeopleTableTableManager get people =>
-      $$PeopleTableTableManager(_db, _db.people);
 }

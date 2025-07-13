@@ -3,23 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/category_repository.dart';
 
 class CategoryState {
-  final List<String> categories;
+  final Map<String, List<String>> categoriesMap;
   final String? selectedCategory;
   final bool searching;
 
   CategoryState({
-    required this.categories,
+    required this.categoriesMap,
     this.selectedCategory,
     this.searching = false,
   });
 
   CategoryState copyWith({
-    List<String>? categories,
+    Map<String, List<String>>? categoriesMap,
     String? selectedCategory,
     bool? searching,
   }) {
     return CategoryState(
-      categories: categories ?? this.categories,
+      categoriesMap: categoriesMap ?? this.categoriesMap,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       searching: searching ?? this.searching,
     );
@@ -27,27 +27,38 @@ class CategoryState {
 }
 
 class CategoryNotifier extends Notifier<CategoryState> {
-  List<String> _categories = [];
   @override
   CategoryState build() {
-    return CategoryState(categories: [], selectedCategory: null);
+    return CategoryState(categoriesMap: {}, selectedCategory: null);
   }
 
-  Future<List<String>> fetchAll() async {
+  Future<void> fetchAll() async {
     final categories = await CategoryRepository().getCategories();
-    _categories = categories;
-    state = state.copyWith(categories: categories);
-    return categories;
+    final categoriesMap = <String, List<String>>{};
+    for (var category in categories) {
+      if (category.subcategory.isNotEmpty) {
+        categoriesMap[category.category] = category.subcategory.split('|');
+      } else {
+        categoriesMap[category.category] = [];
+      }
+    }
+
+    state = state.copyWith(categoriesMap: categoriesMap);
   }
 
-  Future<void> add(String category) async {
+  Future<void> addCategory(String category) async {
     await CategoryRepository().addCategory(category);
-    state = state.copyWith(categories: [...state.categories, category]);
+    await fetchAll();
+  }
+
+  Future<void> addSubcategory(String category, String subcategory) async {
+    await CategoryRepository().addSubcategory(category, subcategory);
+    await fetchAll();
   }
 
   void remove(String category) {
     state = state.copyWith(
-      categories: state.categories.where((c) => c != category).toList(),
+      categoriesMap: Map.from(state.categoriesMap)..remove(category),
     );
   }
 
@@ -55,17 +66,21 @@ class CategoryNotifier extends Notifier<CategoryState> {
     state = state.copyWith(searching: searching);
   }
 
-  void search(String query) {
-    if (query.isEmpty) {
-      state = state.copyWith(categories: _categories);
-    }
-    state = state.copyWith(
-      categories:
-          state.categories
-              .where((c) => c.toLowerCase().contains(query.toLowerCase()))
-              .toList(),
-    );
-  }
+  // void setCategory(String category) {
+  //   state = state.copyWith(selectedCategory: category);
+  // }
+
+  // void search(String query) {
+  //   if (query.isEmpty) {
+  //     state = state.copyWith(categories: _categories);
+  //   }
+  //   state = state.copyWith(
+  //     categories:
+  //         state.categories
+  //             .where((c) => c.toLowerCase().contains(query.toLowerCase()))
+  //             .toList(),
+  //   );
+  // }
 }
 
 final categoryProvider = NotifierProvider<CategoryNotifier, CategoryState>(

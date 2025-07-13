@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../../db/database.dart';
 
 class ListItem extends StatelessWidget {
-  const ListItem({super.key});
+  final LedgerData data;
+  const ListItem({super.key, required this.data});
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final date = DateTime.parse(data.createdAt.toString());
+    final formattedDate = DateFormat('jm').format(date);
     return Material(
       color: Colors.white,
       child: InkWell(
@@ -23,54 +30,45 @@ class ListItem extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              'Received from: ',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.indigo.shade50,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                data.category,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: Colors.indigo,
+                                ),
                               ),
                             ),
-                            Text('Bhanu', style: textTheme.bodySmall),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              'Given to: ',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold,
+                            SizedBox(width: 8),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.purple.shade50,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                data.subcategory,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: Colors.purple,
+                                ),
                               ),
                             ),
-                            Text('Usha', style: textTheme.bodySmall),
                           ],
                         ),
-                        SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              'Category: ',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text('EMI', style: textTheme.bodySmall),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Notes:',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Theming in Flutter allows you to define a something here',
-                          style: textTheme.bodySmall,
-                        ),
+                        if (data.notes.isNotEmpty) ...[
+                          SizedBox(height: 8),
+                          Text(data.notes, style: textTheme.bodySmall),
+                        ],
                       ],
                     ),
                   ),
@@ -79,18 +77,20 @@ class ListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '₹1,458.00',
+                        '₹${data.debit > 0 ? data.debit : data.credit}',
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.green.shade700,
+                          color:
+                              data.debit > 0
+                                  ? Colors.red.shade700
+                                  : Colors.green.shade700,
                         ),
                       ),
                       Row(
                         children: [
                           Text(
-                            '₹1,458.00',
-                            style: textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
+                            '₹${data.balance}',
+                            style: textTheme.bodySmall?.copyWith(
                               color: Colors.black54,
                             ),
                           ),
@@ -103,9 +103,9 @@ class ListItem extends StatelessWidget {
               Divider(color: Colors.black12),
               Row(
                 children: [
-                  Text('Phone Pay', style: textTheme.bodySmall),
+                  Text(data.paymentMethod, style: textTheme.bodySmall),
                   Spacer(),
-                  Text('1:43 AM', style: textTheme.bodySmall),
+                  Text(formattedDate, style: textTheme.bodySmall),
                 ],
               ),
             ],

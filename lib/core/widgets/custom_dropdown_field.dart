@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'category_dialog.dart';
+import 'category_modal.dart';
 import 'clay_input_field.dart';
 
 class CustomDropdownField extends StatefulWidget {

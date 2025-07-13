@@ -27,7 +27,7 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
   }
 
   Future<void> addCategory(String category) async {
-    await ref.read(categoryProvider.notifier).add(category);
+    await ref.read(categoryProvider.notifier).addCategory(category);
     if (mounted) {
       Navigator.of(context).pop();
     }
@@ -53,40 +53,40 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title:
-              state.searching
-                  ? TextField(
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: 'Search',
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      ref.read(categoryProvider.notifier).search(value);
-                    },
-                  )
-                  : Text('Choose Category'),
-          actions: [
-            IconButton(
-              onPressed: () {
-                ref.read(categoryProvider.notifier).setSearching(true);
-              },
-              icon: Icon(Icons.search),
-            ),
-          ],
+          // title:
+          //     state.searching
+          //         ? TextField(
+          //           autofocus: true,
+          //           decoration: InputDecoration(
+          //             hintText: 'Search',
+          //             border: InputBorder.none,
+          //           ),
+          //           onChanged: (value) {
+          //             ref.read(categoryProvider.notifier).search(value);
+          //           },
+          //         )
+          //         : Text('Choose Category'),
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {
+          //       ref.read(categoryProvider.notifier).setSearching(true);
+          //     },
+          //     icon: Icon(Icons.search),
+          //   ),
+          // ],
         ),
         body: ListView(
-          children:
-              state.categories.map((option) {
-                return RadioMenuButton<String>(
-                  value: option,
-                  groupValue: state.selectedCategory,
-                  onChanged: (value) {
-                    Navigator.of(context).pop(value);
-                  },
-                  child: Text(option),
-                );
-              }).toList(),
+          // children:
+          //     state.categories.map((option) {
+          //       return RadioMenuButton<String>(
+          //         value: option,
+          //         groupValue: state.selectedCategory,
+          //         onChanged: (value) {
+          //           Navigator.of(context).pop(value);
+          //         },
+          //         child: Text(option),
+          //       );
+          //     }).toList(),
         ),
         floatingActionButton: ElevatedButton.icon(
           onPressed: () {
