@@ -5,7 +5,6 @@ import '../global_keys.dart';
 
 enum AppMessageType { good, bad, warning, info }
 
-
 class AppSnackBar {
   AppSnackBar._internal();
 

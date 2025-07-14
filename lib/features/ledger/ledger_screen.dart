@@ -28,16 +28,15 @@ class LedgerScreen extends ConsumerWidget {
                 ),
               ),
               SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: items.length,
-                  (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: ListItem(data: items[index]),
-                    );
-                  },
-          
-                ),
+                delegate: SliverChildBuilderDelegate(childCount: items.length, (
+                  context,
+                  index,
+                ) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: ListItem(data: items[index]),
+                  );
+                }),
               ),
               SliverPadding(padding: EdgeInsets.only(bottom: 100)),
             ],
@@ -47,66 +46,68 @@ class LedgerScreen extends ConsumerWidget {
             left: 0,
             right: 0,
             child: Container(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 16,
-                    bottom: 24,
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: 24,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black54.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                    offset: Offset(0, -1),
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black54.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                        offset: Offset(0, -1),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => CashInWidget()),
-                            );
-                          },
-                          style: Theme.of(
-                            context,
-                          ).elevatedButtonTheme.style?.copyWith(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.green.shade800,
-                            ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CashInWidget(),
                           ),
-                          child: const Text('CASH IN'),
+                        );
+                      },
+                      style: Theme.of(
+                        context,
+                      ).elevatedButtonTheme.style?.copyWith(
+                        backgroundColor: WidgetStateProperty.all(
+                          Colors.green.shade800,
                         ),
                       ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CashOutWdiget(),
-                              ),
-                            );
-                          },
-                          style: Theme.of(
-                            context,
-                          ).elevatedButtonTheme.style?.copyWith(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.red.shade800,
-                            ),
+                      child: const Text('CASH IN'),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CashOutWdiget(),
                           ),
-                          child: Text('CASH OUT'),
+                        );
+                      },
+                      style: Theme.of(
+                        context,
+                      ).elevatedButtonTheme.style?.copyWith(
+                        backgroundColor: WidgetStateProperty.all(
+                          Colors.red.shade800,
                         ),
                       ),
-                    ],
+                      child: Text('CASH OUT'),
+                    ),
                   ),
-                ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

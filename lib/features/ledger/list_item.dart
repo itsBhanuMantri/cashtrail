@@ -24,7 +24,7 @@ class ListItem extends StatelessWidget {
   }
 
   Color _getAmountColor(bool isDebit) {
-    return isDebit 
+    return isDebit
         ? const Color(0xFFE53E3E) // Modern red
         : const Color(0xFF38A169); // Modern green
   }
@@ -37,16 +37,13 @@ class ListItem extends StatelessWidget {
     final isDebit = data.debit > 0;
     final amount = isDebit ? data.debit : data.credit;
     final hasNotes = data.notes.isNotEmpty;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.shade300,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
       ),
       child: Material(
         color: Colors.transparent,
@@ -74,15 +71,17 @@ class ListItem extends StatelessWidget {
                             const Color(0xFF667EEA),
                             const Color(0xFFF7FAFC),
                           ),
-                          const SizedBox(width: 6),
-                          _buildCategoryChip(
-                            data.subcategory,
-                            const Color(0xFF9F7AEA),
-                            const Color(0xFFFAF5FF),
-                          ),
+                          if (data.subcategory.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            _buildCategoryChip(
+                              data.subcategory,
+                              const Color(0xFF9F7AEA),
+                              const Color(0xFFFAF5FF),
+                            ),
+                          ],
                         ],
                       ),
-                      
+
                       // Payment method and date row
                       const SizedBox(height: 8),
                       Row(
@@ -121,9 +120,9 @@ class ListItem extends StatelessWidget {
                               ],
                             ),
                           ),
-                          
+
                           const SizedBox(width: 8),
-                          
+
                           // Date
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -131,10 +130,12 @@ class ListItem extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFFF5F5),
+                              // color: const Color(0xFFFFF5F5),
+                              color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: const Color(0xFFFED7D7),
+                                // color: const Color(0xFFFED7D7),
+                                color: Colors.grey.shade300,
                                 width: 1,
                               ),
                             ),
@@ -144,13 +145,15 @@ class ListItem extends StatelessWidget {
                                 const Icon(
                                   Icons.schedule,
                                   size: 12,
-                                  color: Color(0xFFE53E3E),
+                                  // color: Color(0xFFE53E3E),
+                                  color: Colors.grey,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   formattedDate,
                                   style: textTheme.bodySmall?.copyWith(
-                                    color: const Color(0xFFE53E3E),
+                                    // color: const Color(0xFFE53E3E),
+                                    color: Colors.grey,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 10,
                                   ),
@@ -160,7 +163,7 @@ class ListItem extends StatelessWidget {
                           ),
                         ],
                       ),
-                      
+
                       // Notes (if any)
                       if (hasNotes) ...[
                         const SizedBox(height: 8),
@@ -204,14 +207,13 @@ class ListItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // Right section - Amount
                 Align(
-                  alignment: hasNotes 
-                      ? Alignment.topRight 
-                      : Alignment.centerRight,
+                  alignment:
+                      hasNotes ? Alignment.topRight : Alignment.centerRight,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -253,16 +255,17 @@ class ListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryChip(String label, Color primaryColor, Color backgroundColor) {
+  Widget _buildCategoryChip(
+    String label,
+    Color primaryColor,
+    Color backgroundColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: primaryColor.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: primaryColor.withOpacity(0.2), width: 1),
       ),
       child: Text(
         label,

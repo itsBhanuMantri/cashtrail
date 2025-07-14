@@ -7,6 +7,7 @@ import '../../core/components/app_text_button.dart';
 import '../../core/components/app_text_field.dart';
 import '../../core/components/choice_chips.dart';
 import '../../core/config.dart';
+import '../../core/widgets/app_snackbar.dart';
 import '../../core/widgets/category_modal.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/form_provider.dart';
@@ -26,54 +27,18 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
   void onSave() async {
     final formState = ref.read(formProvider);
 
-    if (formState.category == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Please select a category'),
-            ],
-          ),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+    if (formState.amount == null || formState.amount!.isEmpty) {
+      AppSnackBar.bad('Please enter an amount');
       return;
     }
 
-    if (formState.amount == null || formState.amount!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Please enter an amount'),
-            ],
-          ),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+    if (formState.category == null) {
+      AppSnackBar.bad('Please select a category');
       return;
     }
 
     if (formState.paymentMethod == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Please select a payment method'),
-            ],
-          ),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      AppSnackBar.bad('Please select a payment method');
       return;
     }
 

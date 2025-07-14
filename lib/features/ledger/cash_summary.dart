@@ -17,15 +17,9 @@ class CashSummary extends ConsumerWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white,
-            Colors.grey.shade50,
-          ],
+          colors: [Colors.white, Colors.grey.shade50],
         ),
-        border: Border.all(
-          color: Colors.grey.shade300,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
@@ -40,10 +34,7 @@ class CashSummary extends ConsumerWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    Colors.blue.shade600,
-                    Colors.blue.shade700,
-                  ],
+                  colors: [Colors.blue.shade600, Colors.blue.shade700],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
@@ -97,9 +88,9 @@ class CashSummary extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Income and Expense Section
             Row(
               children: [
@@ -158,9 +149,9 @@ class CashSummary extends ConsumerWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(width: 12),
-                
+
                 // Expense Card
                 Expanded(
                   child: Container(
@@ -168,10 +159,7 @@ class CashSummary extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Colors.red.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.red.shade100,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.red.shade100, width: 1),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

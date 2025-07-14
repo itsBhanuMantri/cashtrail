@@ -109,7 +109,7 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: Constant(DateTime.now()),
+    defaultValue: currentDateAndTime,
   );
   @override
   List<GeneratedColumn> get $columns => [

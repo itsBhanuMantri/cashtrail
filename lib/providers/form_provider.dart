@@ -95,6 +95,14 @@ class FormNotifier extends Notifier<FormState> {
       paymentMethod: state.paymentMethod!,
     );
 
+    state = state.copyWith(
+      amount: '',
+      category: '',
+      subcategory: '',
+      notes: '',
+      paymentMethod: '',
+    );
+
     ref.invalidate(ledgerProvider);
     print('bhanu: cash in success');
   }
@@ -121,6 +129,14 @@ class FormNotifier extends Notifier<FormState> {
       subcategory: state.subcategory ?? '',
       notes: state.notes ?? '',
       paymentMethod: state.paymentMethod!,
+    );
+
+    state = state.copyWith(
+      amount: '',
+      category: '',
+      subcategory: '',
+      notes: '',
+      paymentMethod: '',
     );
 
     ref.invalidate(ledgerProvider);
