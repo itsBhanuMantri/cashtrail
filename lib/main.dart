@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16.0),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(12.0),
             ),
             textStyle: TextStyle(
               fontSize: 16.0,
@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16.0),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(12.0),
             ),
             side: BorderSide(width: 2, color: Colors.indigo),
             textStyle: TextStyle(

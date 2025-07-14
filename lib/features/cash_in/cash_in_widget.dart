@@ -27,30 +27,53 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
     final formState = ref.read(formProvider);
 
     if (formState.category == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please select a category')));
-      return;
-    }
-
-    if (formState.subcategory == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please select a subcategory')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Please select a category'),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
     if (formState.amount == null || formState.amount!.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please enter an amount')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Please enter an amount'),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
     if (formState.paymentMethod == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please select a payment method')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Please select a payment method'),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
@@ -66,29 +89,89 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
     ref.read(categoryProvider.notifier).fetchAll();
   }
 
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    required bool isRequired,
+    Widget? action,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.indigo.shade600),
+          SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          if (isRequired)
+            Text(
+              ' *',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.red.shade600,
+              ),
+            ),
+          Spacer(),
+          if (action != null) action,
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final categoryState = ref.watch(categoryProvider);
     final formState = ref.watch(formProvider);
 
-    return Scaffold(
-      backgroundColor: Color(0xffe8e8e8),
-      appBar: AppBar(title: Text('Cash Out')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          final isKeyboardOpen = FocusManager.instance.primaryFocus != null;
+
+          if (isKeyboardOpen) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
+
+          Future.delayed(Duration(milliseconds: 300), () {
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
+        appBar: AppBar(
+          title: Text('Cash In'),
+          backgroundColor: Colors.indigo.shade600,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Amount *', style: textTheme.labelSmall),
-                    SizedBox(height: 4),
+                    // Amount Section
+                    _buildSectionHeader(
+                      icon: Icons.currency_rupee,
+                      title: 'Amount',
+                      isRequired: true,
+                    ),
                     AppInputField(
-                      labelText: 'Amount *',
-                      hintText: 'Amount',
+                      labelText: 'Enter amount',
+                      hintText: '₹ 0.00',
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       autofocus: true,
@@ -96,26 +179,25 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
                         ref.read(formProvider.notifier).setAmount(value);
                       },
                     ),
-                    SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Text('Category *', style: textTheme.labelSmall),
-                          Spacer(),
-                          AppTextButton.small(
-                            onPressed: () {
-                              showCategoryModal(context).then((value) {
-                                if (value != null) {
-                                  ref
-                                      .read(categoryProvider.notifier)
-                                      .addCategory(value);
-                                }
-                              });
-                            },
-                            labelText: '+ Add',
-                          ),
-                        ],
+
+                    SizedBox(height: 16),
+
+                    // Category Section
+                    _buildSectionHeader(
+                      icon: Icons.category_outlined,
+                      title: 'Category',
+                      isRequired: true,
+                      action: AppTextButton.small(
+                        onPressed: () {
+                          showCategoryModal(context).then((value) {
+                            if (value != null) {
+                              ref
+                                  .read(categoryProvider.notifier)
+                                  .addCategory(value);
+                            }
+                          });
+                        },
+                        labelText: '+ Add',
                       ),
                     ),
                     ChoiceChips(
@@ -125,56 +207,103 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
                         ref.read(formProvider.notifier).setCategory(value);
                       },
                     ),
-                    SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Text('Subcategory *', style: textTheme.labelSmall),
-                          Spacer(),
-                          AppTextButton.small(
-                            onPressed: () {
-                              if (formState.category == null) {
-                                return;
-                              }
-                              showCategoryModal(context).then((value) {
-                                if (value != null) {
-                                  ref
-                                      .read(categoryProvider.notifier)
-                                      .addSubcategory(
-                                        formState.category!,
-                                        value,
-                                      );
-                                }
-                              });
-                            },
-                            labelText: '+ Add',
-                          ),
-                        ],
+
+                    SizedBox(height: 16),
+
+                    // Subcategory Section
+                    _buildSectionHeader(
+                      icon: Icons.subdirectory_arrow_right,
+                      title: 'Subcategory',
+                      isRequired: false,
+                      action: AppTextButton.small(
+                        onPressed: () {
+                          if (formState.category == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please select a category first'),
+                                backgroundColor: Colors.orange.shade600,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            return;
+                          }
+                          showCategoryModal(context).then((value) {
+                            if (value != null) {
+                              ref
+                                  .read(categoryProvider.notifier)
+                                  .addSubcategory(formState.category!, value);
+                            }
+                          });
+                        },
+                        labelText: '+ Add',
                       ),
                     ),
-                    ChoiceChips(
-                      choices:
-                          categoryState.categoriesMap[formState.category] ?? [],
-                      selectedChoice: formState.subcategory,
-                      onChanged: (value) {
-                        ref.read(formProvider.notifier).setSubcategory(value);
-                      },
+                    if (formState.category == null)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.grey.shade600,
+                              size: 18,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Select a category first',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      ChoiceChips(
+                        choices:
+                            categoryState.categoriesMap[formState.category] ??
+                            [],
+                        selectedChoice: formState.subcategory,
+                        onChanged: (value) {
+                          ref.read(formProvider.notifier).setSubcategory(value);
+                        },
+                      ),
+
+                    SizedBox(height: 16),
+
+                    // Payment Method Section
+                    _buildSectionHeader(
+                      icon: Icons.payment,
+                      title: 'Payment Method',
+                      isRequired: true,
                     ),
-                    SizedBox(height: 24),
-                    Text('Payment Method', style: textTheme.labelSmall),
-                    SizedBox(height: 8),
                     ChoiceChips(
                       selectedChoice: formState.paymentMethod,
                       choices: Config.paymentMethods,
                       onChanged: onChoiceChanged,
                     ),
-                    SizedBox(height: 24),
-                    Text('Notes', style: textTheme.labelSmall),
-                    SizedBox(height: 4),
+
+                    SizedBox(height: 16),
+
+                    // Notes Section
+                    _buildSectionHeader(
+                      icon: Icons.note_outlined,
+                      title: 'Notes',
+                      isRequired: false,
+                    ),
                     AppInputField(
-                      labelText: 'Notes',
-                      hintText: 'Notes',
+                      labelText: 'Add notes (optional)',
+                      hintText: 'Additional details...',
+                      maxLines: 2,
                       onChanged: (value) {
                         ref.read(formProvider.notifier).setNotes(value);
                       },
@@ -183,13 +312,31 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: AppButton(label: 'Save', onPressed: onSave)),
-              ],
+
+            // Save Button - Fixed at bottom
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    offset: Offset(0, -2),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: AppButton(
+                    onPressed: onSave,
+                    label: 'Save Transaction',
+                  ),
+                ),
+              ),
             ),
-            SizedBox(height: 16),
           ],
         ),
       ),

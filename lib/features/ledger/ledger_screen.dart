@@ -15,82 +15,98 @@ class LedgerScreen extends ConsumerWidget {
     final ledgerState = ref.watch(ledgerProvider);
     final items = ledgerState.valueOrNull ?? [];
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(title: const Text('Cash Trail')),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Stack(
         children: [
-          Padding(padding: const EdgeInsets.all(16.0), child: CashSummary()),
-          Expanded(
-            child: ListView.separated(
-              itemCount: items.length,
-              separatorBuilder: (context, index) {
-                return Container(height: 8);
-              },
-              itemBuilder: (context, index) {
-                return ListItem(data: items[index]);
-              },
-            ),
+          CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CashSummary(),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  childCount: items.length,
+                  (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: ListItem(data: items[index]),
+                    );
+                  },
+          
+                ),
+              ),
+              SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 16,
-              bottom: 16,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black54.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                  offset: Offset(0, -1),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => CashInWidget()),
-                      );
-                    },
-                    style: Theme.of(
-                      context,
-                    ).elevatedButtonTheme.style?.copyWith(
-                      backgroundColor: WidgetStateProperty.all(
-                        Colors.green.shade800,
-                      ),
-                    ),
-                    child: const Text('CASH IN'),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 16,
+                    bottom: 24,
                   ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => CashOutWdiget(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black54.withValues(alpha: 0.1),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                        offset: Offset(0, -1),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => CashInWidget()),
+                            );
+                          },
+                          style: Theme.of(
+                            context,
+                          ).elevatedButtonTheme.style?.copyWith(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.green.shade800,
+                            ),
+                          ),
+                          child: const Text('CASH IN'),
                         ),
-                      );
-                    },
-                    style: Theme.of(
-                      context,
-                    ).elevatedButtonTheme.style?.copyWith(
-                      backgroundColor: WidgetStateProperty.all(
-                        Colors.red.shade800,
                       ),
-                    ),
-                    child: Text('CASH OUT'),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CashOutWdiget(),
+                              ),
+                            );
+                          },
+                          style: Theme.of(
+                            context,
+                          ).elevatedButtonTheme.style?.copyWith(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.red.shade800,
+                            ),
+                          ),
+                          child: Text('CASH OUT'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
           ),
         ],
       ),

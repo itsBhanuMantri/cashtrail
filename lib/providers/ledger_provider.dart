@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../db/database.dart';
+import '../repositories/ledget_repository.dart';
 
 final ledgerProvider = FutureProvider<List<LedgerData>>((ref) async {
-  final db = Database();
-  final list = await db.select(db.ledger).get();
-  return list;
+  final repo = LedgerRepository();
+  return repo.fetchAll();
 });
 
 class LedgerSummary {

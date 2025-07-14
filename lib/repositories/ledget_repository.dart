@@ -7,6 +7,14 @@ enum TransactionType { credit, debit }
 class LedgerRepository {
   LedgerRepository();
 
+  Future<List<LedgerData>> fetchAll() async {
+    final db = Database();
+    final list =
+        await (db.select(db.ledger)
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)])).get();
+    return list;
+  }
+
   Future<void> cashOut({
     required double amount,
     required String category,

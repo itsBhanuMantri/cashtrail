@@ -82,9 +82,6 @@ class MyChoiceChip extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: Colors.indigo,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             side: BorderSide(color: Colors.indigo, width: 1),
           ),
