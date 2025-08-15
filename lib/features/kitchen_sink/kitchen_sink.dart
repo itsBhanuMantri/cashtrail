@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/components/app_button.dart';
+import '../../core/components/buttons/app_button.dart';
 import '../../core/components/app_text_field.dart';
 import '../../core/components/cash_in_button.dart';
 import '../../core/components/cash_out_button.dart';
 import '../../core/components/choice_chips.dart';
+import '../../core/theme/app_component_theme.dart';
+import '../../core/theme/providers.dart';
 
-class KitchenSink extends StatelessWidget {
+class KitchenSink extends ConsumerWidget {
   const KitchenSink({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
+    final currentTheme = ref.watch(themeTypeProvider);
+    final currentThemeString = getCurrentThemeString(currentTheme);
     return Scaffold(
       appBar: AppBar(title: const Text('Kitchen Sink')),
       body: ListView(
@@ -22,6 +26,29 @@ class KitchenSink extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Theme'),
+                    SizedBox(height: 4),
+                    ChoiceChipsView(
+                      choices: ['Material', 'Claymorphism'],
+                      selectedChoice: currentThemeString,
+                      onChanged: (theme) {
+                        AppThemeType appThemeType = AppThemeType.material;
+                
+                        if (theme == 'Material') {
+                          appThemeType = AppThemeType.material;
+                        } else if (theme == 'Claymorphism') {
+                          appThemeType = AppThemeType.claymorphism;
+                        }
+                        
+                        ref.read(themeTypeProvider.notifier).state = appThemeType;
+                      },
+                    ),
+                  ],
+                ),
+
                 Text('Primary Button'),
                 SizedBox(height: 4),
                 AppButton(onPressed: () {}, label: 'Primary Button'),
@@ -86,6 +113,16 @@ class KitchenSink extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getCurrentThemeString(AppThemeType currentTheme) {
+    if (currentTheme == AppThemeType.material) {
+      return 'Material';
+    } else if (currentTheme == AppThemeType.claymorphism) {
+      return 'Claymorphism';
+    } else {
+      return 'Unknown';
+    }
   }
 }
 
