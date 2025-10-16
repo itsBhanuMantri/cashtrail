@@ -54,9 +54,9 @@ class ListItem extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TransactionScreen(
-                data: data
-              )),
+              MaterialPageRoute(
+                builder: (context) => TransactionScreen(data: data),
+              ),
             );
           },
           splashColor: Colors.grey.withOpacity(0.1),

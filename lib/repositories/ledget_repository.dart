@@ -87,4 +87,28 @@ class LedgerRepository {
     final db = Database();
     await (db.delete(db.ledger)..where((tbl) => tbl.id.equals(id))).go();
   }
+
+  Future<void> updateTransaction({
+    required int id,
+    required double credit,
+    required double debit,
+    required double balance,
+    required String category,
+    required String subcategory,
+    required String notes,
+    required String paymentMethod,
+  }) async {
+    final db = Database();
+    await (db.update(db.ledger)..where((tbl) => tbl.id.equals(id))).write(
+      LedgerCompanion(
+        credit: Value(credit),
+        debit: Value(debit),
+        balance: Value(balance),
+        category: Value(category),
+        subcategory: Value(subcategory),
+        notes: Value(notes),
+        paymentMethod: Value(paymentMethod),
+      ),
+    );
+  }
 }

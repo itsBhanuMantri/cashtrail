@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../db/database.dart';
 import '../../providers/ledger_provider.dart';
+import 'edit_transaction_screen.dart';
 
 class TransactionScreen extends ConsumerWidget {
   final LedgerData data;
@@ -17,7 +18,7 @@ class TransactionScreen extends ConsumerWidget {
     final amount = isCredit ? data.credit : data.debit;
     final transactionType = isCredit ? 'Credit' : 'Debit';
     final transactionColor = isCredit ? Colors.green : Colors.red;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transaction Details'),
@@ -25,6 +26,11 @@ class TransactionScreen extends ConsumerWidget {
         foregroundColor: theme.colorScheme.onPrimary,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () => _navigateToEdit(context),
+            tooltip: 'Edit Transaction',
+          ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => _showDeleteConfirmation(context, ref),
@@ -38,20 +44,26 @@ class TransactionScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Transaction Amount Card
-            _buildAmountCard(context, theme, amount, transactionType, transactionColor),
-            
+            _buildAmountCard(
+              context,
+              theme,
+              amount,
+              transactionType,
+              transactionColor,
+            ),
+
             const SizedBox(height: 24),
-            
+
             // Transaction Details Card
             _buildDetailsCard(context, theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // Payment Information Card
             _buildPaymentCard(context, theme),
-            
+
             const SizedBox(height: 16),
-            
+
             // Notes Card (if notes exist)
             if (data.notes.isNotEmpty) _buildNotesCard(context, theme),
           ],
@@ -60,7 +72,13 @@ class TransactionScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAmountCard(BuildContext context, ThemeData theme, double amount, String type, Color color) {
+  Widget _buildAmountCard(
+    BuildContext context,
+    ThemeData theme,
+    double amount,
+    String type,
+    Color color,
+  ) {
     final isCredit = data.credit > 0;
     return Card(
       elevation: 8,
@@ -74,10 +92,7 @@ class TransactionScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              color.withOpacity(0.1),
-              color.withOpacity(0.05),
-            ],
+            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
           ),
         ),
         child: Column(
@@ -97,7 +112,10 @@ class TransactionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              NumberFormat.currency(symbol: '\$', decimalDigits: 2).format(amount),
+              NumberFormat.currency(
+                symbol: '\$',
+                decimalDigits: 2,
+              ).format(amount),
               style: theme.textTheme.headlineMedium?.copyWith(
                 color: color,
                 fontWeight: FontWeight.bold,
@@ -183,11 +201,7 @@ class TransactionScreen extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.payment,
-                  color: theme.colorScheme.primary,
-                  size: 24,
-                ),
+                Icon(Icons.payment, color: theme.colorScheme.primary, size: 24),
                 const SizedBox(width: 12),
                 Text(
                   'Payment Information',
@@ -202,7 +216,9 @@ class TransactionScreen extends ConsumerWidget {
               context,
               theme,
               'Payment Method',
-              data.paymentMethod.isNotEmpty ? data.paymentMethod : 'Not specified',
+              data.paymentMethod.isNotEmpty
+                  ? data.paymentMethod
+                  : 'Not specified',
               Icons.credit_card,
             ),
           ],
@@ -222,11 +238,7 @@ class TransactionScreen extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.note,
-                  color: theme.colorScheme.primary,
-                  size: 24,
-                ),
+                Icon(Icons.note, color: theme.colorScheme.primary, size: 24),
                 const SizedBox(width: 12),
                 Text(
                   'Notes',
@@ -247,10 +259,7 @@ class TransactionScreen extends ConsumerWidget {
                   color: theme.colorScheme.outline.withOpacity(0.2),
                 ),
               ),
-              child: Text(
-                data.notes,
-                style: theme.textTheme.bodyMedium,
-              ),
+              child: Text(data.notes, style: theme.textTheme.bodyMedium),
             ),
           ],
         ),
@@ -258,15 +267,17 @@ class TransactionScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, ThemeData theme, String label, String value, IconData icon) {
+  Widget _buildDetailRow(
+    BuildContext context,
+    ThemeData theme,
+    String label,
+    String value,
+    IconData icon,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: theme.colorScheme.primary.withOpacity(0.7),
-        ),
+        Icon(icon, size: 20, color: theme.colorScheme.primary.withOpacity(0.7)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -293,9 +304,20 @@ class TransactionScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
+  void _navigateToEdit(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EditTransactionScreen(data: data),
+      ),
+    );
+  }
+
+  Future<void> _showDeleteConfirmation(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final theme = Theme.of(context);
-    
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -303,11 +325,7 @@ class TransactionScreen extends ConsumerWidget {
         return AlertDialog(
           title: Row(
             children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.red,
-                size: 28,
-              ),
+              Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
               const SizedBox(width: 12),
               const Text('Delete Transaction'),
             ],
@@ -398,9 +416,7 @@ class TransactionScreen extends ConsumerWidget {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
       // Delete the transaction

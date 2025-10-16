@@ -42,7 +42,10 @@ class ClaymorphismComponentTheme implements AppComponentTheme {
   }
 
   @override
-  Widget buildCheckbox({required bool value, required ValueChanged<bool?> onChanged}) {
+  Widget buildCheckbox({
+    required bool value,
+    required ValueChanged<bool?> onChanged,
+  }) {
     return Checkbox(value: value, onChanged: onChanged); // Customize if needed
   }
 }

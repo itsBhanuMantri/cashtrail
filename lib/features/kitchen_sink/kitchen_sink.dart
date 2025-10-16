@@ -36,14 +36,15 @@ class KitchenSink extends ConsumerWidget {
                       selectedChoice: currentThemeString,
                       onChanged: (theme) {
                         AppThemeType appThemeType = AppThemeType.material;
-                
+
                         if (theme == 'Material') {
                           appThemeType = AppThemeType.material;
                         } else if (theme == 'Claymorphism') {
                           appThemeType = AppThemeType.claymorphism;
                         }
-                        
-                        ref.read(themeTypeProvider.notifier).state = appThemeType;
+
+                        ref.read(themeTypeProvider.notifier).state =
+                            appThemeType;
                       },
                     ),
                   ],
