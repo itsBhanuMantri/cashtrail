@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../db/database.dart';
 import '../repositories/ledget_repository.dart';
 
+final ledgerRepositoryProvider = Provider<LedgerRepository>((ref) {
+  return LedgerRepository();
+});
+
 final ledgerProvider = FutureProvider<List<LedgerData>>((ref) async {
-  final repo = LedgerRepository();
+  final repo = ref.watch(ledgerRepositoryProvider);
   return repo.fetchAll();
 });
 

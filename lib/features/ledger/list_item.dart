@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/utils/format_inr.dart';
 import '../../db/database.dart';
+import '../transaction/transaction_screen.dart';
 
 class ListItem extends StatelessWidget {
   final LedgerData data;
@@ -50,7 +51,14 @@ class ListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TransactionScreen(
+                data: data
+              )),
+            );
+          },
           splashColor: Colors.grey.withOpacity(0.1),
           highlightColor: Colors.grey.withOpacity(0.05),
           child: Padding(

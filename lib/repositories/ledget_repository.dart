@@ -82,4 +82,9 @@ class LedgerRepository {
     final double balance = totalCredits - totalDebits;
     return balance;
   }
+
+  Future<void> deleteTransaction(int id) async {
+    final db = Database();
+    await (db.delete(db.ledger)..where((tbl) => tbl.id.equals(id))).go();
+  }
 }
