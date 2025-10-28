@@ -46,6 +46,8 @@ dependencies:
   tailwind_palette: ^0.0.4
   url_launcher: ^6.3.2
   syncfusion_flutter_charts: ^31.1.19
+  content_resolver: ^0.3.4
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

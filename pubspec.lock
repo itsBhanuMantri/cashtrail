@@ -185,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  content_resolver:
+    dependency: "direct main"
+    description:
+      name: content_resolver
+      sha256: "020a4549c5157c3a6c2ced226bd3b6e271d6a44ed072a12dfc024ef865fd8e70"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.4"
   convert:
     dependency: transitive
     description:
@@ -713,7 +721,7 @@ packages:
     source: hosted
     version: "2.6.5"
   rxdart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: rxdart
       sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
