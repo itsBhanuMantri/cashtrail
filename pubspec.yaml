@@ -43,6 +43,9 @@ dependencies:
   intl: ^0.20.2
   toastification: ^3.0.3
   flutter_launcher_icons: ^0.14.4
+  tailwind_palette: ^0.0.4
+  url_launcher: ^6.3.2
+  syncfusion_flutter_charts: ^31.1.19
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +65,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon/app_icon.jpg"
+  image_path: "assets/icon/app_icon.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
 
 # For information on the generic Dart part of this file, see the

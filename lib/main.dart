@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tailwind_palette/tailwind_palette.dart';
 
 import 'router.dart';
 
@@ -102,7 +103,7 @@ class MyApp extends StatelessWidget {
           padding: EdgeInsets.zero,
           labelStyle: textTheme.labelSmall,
         ),
-        scaffoldBackgroundColor: const Color.fromARGB(255, 222, 222, 222),
+        scaffoldBackgroundColor: TailwindPalette.slate.shade100,
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.indigo,
           foregroundColor: Colors.white,

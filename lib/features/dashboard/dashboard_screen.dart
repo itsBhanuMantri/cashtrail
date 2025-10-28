@@ -1,21 +1,22 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tailwind_palette/tailwind_palette.dart';
 
 import '../../providers/ledger_provider.dart';
 import '../cash_in/cash_in_widget.dart';
-import 'cash_summary.dart';
-import 'list_item.dart';
 import '../cash_out/cash_out_widget.dart';
+import '../transactions/transactions_screen.dart';
+import 'cash_summary.dart';
+import '../../core/widgets/common/transaction_list_item.dart';
 
-class LedgerScreen extends ConsumerWidget {
-  const LedgerScreen({super.key});
+class DashboardScreen extends ConsumerWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ledgerState = ref.watch(ledgerProvider);
-    final items = ledgerState.valueOrNull ?? [];
+    final items = (ledgerState.valueOrNull ?? []).take(3).toList();
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(title: const Text('Cash Trail')),
       body: Stack(
         children: [
@@ -27,6 +28,40 @@ class LedgerScreen extends ConsumerWidget {
                   child: CashSummary(),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Recent Transactions',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: TailwindPalette.slate.shade700,
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TransactionsScreen(),
+                            ),
+                          );
+                        },
+                        icon: Text(
+                          'See All',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        label: Icon(Icons.chevron_right),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(childCount: items.length, (
                   context,
@@ -34,7 +69,7 @@ class LedgerScreen extends ConsumerWidget {
                 ) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
-                    child: ListItem(data: items[index]),
+                    child: TransactionListItem(data: items[index]),
                   );
                 }),
               ),

@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import 'core/global_keys.dart';
 import 'features/kitchen_sink/kitchen_sink.dart';
-import 'features/ledger/ledger_screen.dart';
+import 'features/dashboard/dashboard_screen.dart';
+import 'features/upi_payment/upi_payment_screen.dart';
 
 final GoRouter router = GoRouter(
   navigatorKey: globalNavigatorKey,
@@ -11,7 +12,8 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
-        return const LedgerScreen();
+        return const DashboardScreen();
+        // return const PhonePePaymentApp();
         // return const KitchenSink();
       },
     ),
