@@ -1,17 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tailwind_palette/tailwind_palette.dart';
 
 import 'router.dart';
+import 'services.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const ProviderScope(child: MyApp()));
+  await dotenv.load(fileName: '.env');
+
+  registerServices();
+
+  // Determine initial route based on shared file availability
+  var initialLocation = '/scan_receipt';
+  String? sharedFilePath;
+  const platform = MethodChannel('shared_file_channel');
+  try {
+    final String? result = await platform.invokeMethod<String>('getSharedFile');
+    if (result != null && result.trim().isNotEmpty) {
+      initialLocation = '/scan_receipt';
+      sharedFilePath = result;
+    }
+  } on PlatformException catch (e) {
+    debugPrint('Error getting shared file on launch: $e');
+  }
+
+  final GoRouter appRouter = createRouter(
+    initialLocation: initialLocation,
+    initialExtra: sharedFilePath,
+  );
+
+  runApp(ProviderScope(child: MyApp(router: appRouter)));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.router});
+
+  final GoRouter router;
 
   @override
   Widget build(BuildContext context) {

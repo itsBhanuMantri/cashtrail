@@ -9,5 +9,8 @@ class Ledger extends Table {
   TextColumn get subcategory => text().withDefault(const Constant(''))();
   TextColumn get notes => text().withDefault(const Constant(''))();
   TextColumn get paymentMethod => text().withDefault(const Constant(''))();
+  TextColumn get paidToName => text().withDefault(const Constant(''))();
+  TextColumn get paidToPhone => text().withDefault(const Constant(''))();
+  TextColumn get paidToUpi => text().withDefault(const Constant(''))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

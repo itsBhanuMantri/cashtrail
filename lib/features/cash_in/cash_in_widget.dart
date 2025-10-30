@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/components/app_text_field.dart';
 import '../../core/components/buttons/app_button.dart';
 import '../../core/components/buttons/app_text_button.dart';
-import '../../core/components/app_text_field.dart';
 import '../../core/components/choice_chips.dart';
 import '../../core/config.dart';
 import '../../core/widgets/app_snackbar.dart';
@@ -13,13 +13,19 @@ import '../../providers/category_provider.dart';
 import '../../providers/form_provider.dart';
 
 class CashInWidget extends ConsumerStatefulWidget {
-  const CashInWidget({super.key});
+  final Map<String, dynamic>? data;
+  const CashInWidget({super.key, this.data});
 
   @override
   ConsumerState<CashInWidget> createState() => _CashInWidgetState();
 }
 
 class _CashInWidgetState extends ConsumerState<CashInWidget> {
+  final amountController = TextEditingController();
+  final notesController = TextEditingController();
+
+  bool autoFocusAmount = true;
+
   void onChoiceChanged(String choice) {
     ref.read(formProvider.notifier).setPaymentMethod(choice);
   }
@@ -51,7 +57,30 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
   @override
   void initState() {
     super.initState();
-    ref.read(categoryProvider.notifier).fetchAll();
+
+    var amount = '';
+    var notes = '';
+    var paymentMethod = '';
+
+    if (widget.data != null) {
+      autoFocusAmount = false;
+      amount = widget.data?['amount'] ?? '';
+      notes = widget.data?['message'] ?? '';
+      paymentMethod = widget.data?['payment_method'] ?? '';
+    }
+
+    amountController.text = amount;
+    notesController.text = notes;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(categoryProvider.notifier).fetchAll();
+      if (widget.data != null) {
+        final notifier = ref.read(formProvider.notifier);
+        notifier.setAmount(amount);
+        notifier.setPaymentMethod(paymentMethod);
+        notifier.setNotes(notes);
+      }
+    });
   }
 
   Widget _buildSectionHeader({
@@ -88,6 +117,12 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -137,9 +172,10 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
                     AppInputField(
                       labelText: 'Enter amount',
                       hintText: '₹ 0.00',
+                      controller: TextEditingController(text: formState.amount),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      autofocus: true,
+                      autofocus: autoFocusAmount,
                       onChanged: (value) {
                         ref.read(formProvider.notifier).setAmount(value);
                       },
@@ -268,6 +304,7 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
                     AppInputField(
                       labelText: 'Add notes (optional)',
                       hintText: 'Additional details...',
+                      controller: notesController,
                       maxLines: 2,
                       onChanged: (value) {
                         ref.read(formProvider.notifier).setNotes(value);
