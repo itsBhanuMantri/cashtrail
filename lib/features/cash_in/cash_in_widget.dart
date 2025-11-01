@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/components/app_text_field.dart';
 import '../../core/components/buttons/app_button.dart';
@@ -11,6 +14,8 @@ import '../../core/widgets/app_snackbar.dart';
 import '../../core/widgets/category_modal.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/form_provider.dart';
+import '../../repositories/ledger_repository.dart';
+import '../../services.dart';
 
 class CashInWidget extends ConsumerStatefulWidget {
   final Map<String, dynamic>? data;
@@ -61,24 +66,67 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
     var amount = '';
     var notes = '';
     var paymentMethod = '';
+    final bankName = '';
+    var paidToName = '';
+    var paidToPhone = '';
+    var paidToUpi = '';
 
     if (widget.data != null) {
       autoFocusAmount = false;
       amount = widget.data?['amount'] ?? '';
       notes = widget.data?['message'] ?? '';
       paymentMethod = widget.data?['payment_method'] ?? '';
+      paidToName = widget.data?['paid_to_name'] ?? '';
+      paidToPhone = widget.data?['paid_to_phone'] ?? '';
+      paidToUpi = widget.data?['paid_to_upi'] ?? '';
     }
 
     amountController.text = amount;
     notesController.text = notes;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(categoryProvider.notifier).fetchAll();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      unawaited(ref.read(categoryProvider.notifier).fetchAll());
       if (widget.data != null) {
         final notifier = ref.read(formProvider.notifier);
         notifier.setAmount(amount);
         notifier.setPaymentMethod(paymentMethod);
         notifier.setNotes(notes);
+        notifier.setBankName(bankName);
+        notifier.setPaidToName(paidToName);
+        notifier.setPaidToPhone(paidToPhone);
+        notifier.setPaidToUpi(paidToUpi);
+
+        if (paidToName.isNotEmpty) {
+          final dbRecord = await sl
+              .get<LedgerRepository>()
+              .fetchRecentOneByPaidToName(paidToName);
+
+          if (dbRecord != null) {
+            notifier.setCategory(dbRecord.category);
+            notifier.setSubcategory(dbRecord.subcategory);
+            notifier.setBankName(dbRecord.bankName);
+          }
+        } else if (paidToPhone.isNotEmpty) {
+          final dbRecord = await sl
+              .get<LedgerRepository>()
+              .fetchRecentOneByPhone(paidToPhone);
+
+          if (dbRecord != null) {
+            notifier.setCategory(dbRecord.category);
+            notifier.setSubcategory(dbRecord.subcategory);
+            notifier.setBankName(dbRecord.bankName);
+          }
+        } else if (paidToUpi.isNotEmpty) {
+          final dbRecord = await sl.get<LedgerRepository>().fetchRecentOneByUpi(
+            paidToUpi,
+          );
+
+          if (dbRecord != null) {
+            notifier.setCategory(dbRecord.category);
+            notifier.setSubcategory(dbRecord.subcategory);
+            notifier.setBankName(dbRecord.bankName);
+          }
+        }
       }
     });
   }
@@ -122,6 +170,7 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
   @override
   void dispose() {
     amountController.dispose();
+    notesController.dispose();
     super.dispose();
   }
 
@@ -132,7 +181,7 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         if (!didPop) {
           final isKeyboardOpen = FocusManager.instance.primaryFocus != null;
 
@@ -140,11 +189,14 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
             FocusManager.instance.primaryFocus?.unfocus();
           }
 
-          Future.delayed(Duration(milliseconds: 300), () {
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          });
+          // If there's a previous route, pop normally
+          // Otherwise, navigate to home screen (opened from external app)
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            // Opened from external app - navigate to home
+            context.go('/');
+          }
         }
       },
       child: Scaffold(
@@ -172,7 +224,7 @@ class _CashInWidgetState extends ConsumerState<CashInWidget> {
                     AppInputField(
                       labelText: 'Enter amount',
                       hintText: '₹ 0.00',
-                      controller: TextEditingController(text: formState.amount),
+                      controller: amountController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       autofocus: autoFocusAmount,

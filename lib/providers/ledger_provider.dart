@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../db/database.dart';
-import '../repositories/ledget_repository.dart';
+import '../repositories/ledger_repository.dart';
 
 final ledgerRepositoryProvider = Provider<LedgerRepository>((ref) {
   return LedgerRepository();

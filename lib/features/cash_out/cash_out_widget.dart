@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/components/buttons/app_button.dart';
 import '../../core/components/buttons/app_text_button.dart';
@@ -11,15 +14,23 @@ import '../../core/widgets/app_snackbar.dart';
 import '../../core/widgets/category_modal.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/form_provider.dart';
+import '../../repositories/ledger_repository.dart';
+import '../../services.dart';
 
-class CashOutWdiget extends ConsumerStatefulWidget {
-  const CashOutWdiget({super.key});
+class CashOutWidget extends ConsumerStatefulWidget {
+  final Map<String, dynamic>? data;
+  const CashOutWidget({super.key, this.data});
 
   @override
-  ConsumerState<CashOutWdiget> createState() => _CashOutWidgetState();
+  ConsumerState<CashOutWidget> createState() => _CashOutWidgetState();
 }
 
-class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
+class _CashOutWidgetState extends ConsumerState<CashOutWidget> {
+  final amountController = TextEditingController();
+  final notesController = TextEditingController();
+
+  bool autoFocusAmount = true;
+
   void onChoiceChanged(String choice) {
     ref.read(formProvider.notifier).setPaymentMethod(choice);
   }
@@ -44,15 +55,82 @@ class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
 
     await ref.read(formProvider.notifier).cashOut();
     AppSnackBar.good('Transaction saved successfully');
-    if (mounted && Navigator.canPop(context)) {
-      Navigator.pop(context);
+    if (mounted) {
+      context.go('/');
     }
   }
 
   @override
   void initState() {
     super.initState();
+
     ref.read(categoryProvider.notifier).fetchAll();
+
+    var amount = '';
+    var notes = '';
+    var paymentMethod = '';
+    final bankName = '';
+    var paidToName = '';
+    var paidToPhone = '';
+    var paidToUpi = '';
+
+    if (widget.data != null) {
+      autoFocusAmount = false;
+      amount = widget.data?['amount'] ?? '';
+      notes = widget.data?['message'] ?? '';
+      paymentMethod = widget.data?['payment_method'] ?? '';
+      paidToName = widget.data?['paid_to_name'] ?? '';
+      paidToPhone = widget.data?['paid_to_phone'] ?? '';
+      paidToUpi = widget.data?['paid_to_upi'] ?? '';
+    }
+
+    amountController.text = amount;
+    notesController.text = notes;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (widget.data != null) {
+        final notifier = ref.read(formProvider.notifier);
+        notifier.setAmount(amount);
+        notifier.setPaymentMethod(paymentMethod);
+        notifier.setNotes(notes);
+        notifier.setBankName(bankName);
+        notifier.setPaidToName(paidToName);
+        notifier.setPaidToPhone(paidToPhone);
+        notifier.setPaidToUpi(paidToUpi);
+
+        if (paidToName.isNotEmpty) {
+          final dbRecord = await sl
+              .get<LedgerRepository>()
+              .fetchRecentOneByPaidToName(paidToName);
+
+          if (dbRecord != null) {
+            notifier.setCategory(dbRecord.category);
+            notifier.setSubcategory(dbRecord.subcategory);
+            notifier.setBankName(dbRecord.bankName);
+          }
+        } else if (paidToPhone.isNotEmpty) {
+          final dbRecord = await sl
+              .get<LedgerRepository>()
+              .fetchRecentOneByPhone(paidToPhone);
+
+          if (dbRecord != null) {
+            notifier.setCategory(dbRecord.category);
+            notifier.setSubcategory(dbRecord.subcategory);
+            notifier.setBankName(dbRecord.bankName);
+          }
+        } else if (paidToUpi.isNotEmpty) {
+          final dbRecord = await sl.get<LedgerRepository>().fetchRecentOneByUpi(
+            paidToUpi,
+          );
+
+          if (dbRecord != null) {
+            notifier.setCategory(dbRecord.category);
+            notifier.setSubcategory(dbRecord.subcategory);
+            notifier.setBankName(dbRecord.bankName);
+          }
+        }
+      }
+    });
   }
 
   Widget _buildSectionHeader({
@@ -92,13 +170,20 @@ class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
   }
 
   @override
+  void dispose() {
+    amountController.dispose();
+    notesController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final categoryState = ref.watch(categoryProvider);
     final formState = ref.watch(formProvider);
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         if (!didPop) {
           final isKeyboardOpen = FocusManager.instance.primaryFocus != null;
 
@@ -106,11 +191,14 @@ class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
             FocusManager.instance.primaryFocus?.unfocus();
           }
 
-          Future.delayed(Duration(milliseconds: 300), () {
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          });
+          // If there's a previous route, pop normally
+          // Otherwise, navigate to home screen (opened from external app)
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            // Opened from external app - navigate to home
+            context.go('/');
+          }
         }
       },
       child: Scaffold(
@@ -138,9 +226,10 @@ class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
                     AppInputField(
                       labelText: 'Enter amount',
                       hintText: '₹ 0.00',
+                      controller: amountController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      autofocus: true,
+                      autofocus: autoFocusAmount,
                       onChanged: (value) {
                         ref.read(formProvider.notifier).setAmount(value);
                       },
@@ -269,6 +358,7 @@ class _CashOutWidgetState extends ConsumerState<CashOutWdiget> {
                     AppInputField(
                       labelText: 'Add notes (optional)',
                       hintText: 'Additional details...',
+                      controller: notesController,
                       maxLines: 2,
                       onChanged: (value) {
                         ref.read(formProvider.notifier).setNotes(value);

@@ -1,25 +1,26 @@
 import 'package:drift/drift.dart';
 
 import '../db/database.dart';
+import '../services.dart';
 
 class CategoryRepository {
   final separator = '|';
   CategoryRepository();
 
   Future<List<Category>> getCategories() async {
-    final db = Database();
+    final db = sl.get<Database>();
     final categories = await db.select(db.categories).get();
     return categories;
   }
 
   Future<List<String>> getSubcategories(String category) async {
-    final db = Database();
+    final db = sl.get<Database>();
     final category = await db.select(db.categories).getSingle();
     return category.subcategory.split(separator);
   }
 
   Future<void> addCategory(String category) async {
-    final db = Database();
+    final db = sl.get<Database>();
     if (await getCategory(category) != null) {
       return;
     }
@@ -29,7 +30,7 @@ class CategoryRepository {
   }
 
   Future<Category?> getCategory(String category) async {
-    final db = Database();
+    final db = sl.get<Database>();
     final result =
         await (db.select(db.categories)..where(
           (tbl) => tbl.category.lower().equals(category.toLowerCase()),
@@ -38,7 +39,7 @@ class CategoryRepository {
   }
 
   Future<void> addSubcategory(String category, String subcategory) async {
-    final db = Database();
+    final db = sl.get<Database>();
     final row = await getCategory(category);
 
     if (row == null) {

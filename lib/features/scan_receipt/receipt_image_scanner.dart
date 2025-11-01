@@ -88,7 +88,13 @@ class _ReceiptImageScannerState extends ConsumerState<ReceiptImageScanner>
 
         final receiptJson = _jsonResult?['receipt_json'];
 
-        GoRouter.of(context).go('/cash_in', extra: receiptJson);
+        if (receiptJson != null) {
+          if (receiptJson['transaction_type'] == 'credit') {
+            GoRouter.of(context).go('/cash_in', extra: receiptJson);
+          } else {
+            GoRouter.of(context).go('/cash_out', extra: receiptJson);
+          }
+        }
       }
     } catch (e) {
       if (mounted) {

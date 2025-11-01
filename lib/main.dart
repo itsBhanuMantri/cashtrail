@@ -16,7 +16,7 @@ Future<void> main() async {
   registerServices();
 
   // Determine initial route based on shared file availability
-  var initialLocation = '/scan_receipt';
+  var initialLocation = '/';
   String? sharedFilePath;
   const platform = MethodChannel('shared_file_channel');
   try {

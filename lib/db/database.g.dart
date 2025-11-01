@@ -99,6 +99,54 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _paidToNameMeta = const VerificationMeta(
+    'paidToName',
+  );
+  @override
+  late final GeneratedColumn<String> paidToName = GeneratedColumn<String>(
+    'paid_to_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _paidToPhoneMeta = const VerificationMeta(
+    'paidToPhone',
+  );
+  @override
+  late final GeneratedColumn<String> paidToPhone = GeneratedColumn<String>(
+    'paid_to_phone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _paidToUpiMeta = const VerificationMeta(
+    'paidToUpi',
+  );
+  @override
+  late final GeneratedColumn<String> paidToUpi = GeneratedColumn<String>(
+    'paid_to_upi',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bankNameMeta = const VerificationMeta(
+    'bankName',
+  );
+  @override
+  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
+    'bank_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -121,6 +169,10 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
     subcategory,
     notes,
     paymentMethod,
+    paidToName,
+    paidToPhone,
+    paidToUpi,
+    bankName,
     createdAt,
   ];
   @override
@@ -186,6 +238,36 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
         ),
       );
     }
+    if (data.containsKey('paid_to_name')) {
+      context.handle(
+        _paidToNameMeta,
+        paidToName.isAcceptableOrUnknown(
+          data['paid_to_name']!,
+          _paidToNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('paid_to_phone')) {
+      context.handle(
+        _paidToPhoneMeta,
+        paidToPhone.isAcceptableOrUnknown(
+          data['paid_to_phone']!,
+          _paidToPhoneMeta,
+        ),
+      );
+    }
+    if (data.containsKey('paid_to_upi')) {
+      context.handle(
+        _paidToUpiMeta,
+        paidToUpi.isAcceptableOrUnknown(data['paid_to_upi']!, _paidToUpiMeta),
+      );
+    }
+    if (data.containsKey('bank_name')) {
+      context.handle(
+        _bankNameMeta,
+        bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -241,6 +323,26 @@ class $LedgerTable extends Ledger with TableInfo<$LedgerTable, LedgerData> {
             DriftSqlType.string,
             data['${effectivePrefix}payment_method'],
           )!,
+      paidToName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}paid_to_name'],
+          )!,
+      paidToPhone:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}paid_to_phone'],
+          )!,
+      paidToUpi:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}paid_to_upi'],
+          )!,
+      bankName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}bank_name'],
+          )!,
       createdAt:
           attachedDatabase.typeMapping.read(
             DriftSqlType.dateTime,
@@ -264,6 +366,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
   final String subcategory;
   final String notes;
   final String paymentMethod;
+  final String paidToName;
+  final String paidToPhone;
+  final String paidToUpi;
+  final String bankName;
   final DateTime createdAt;
   const LedgerData({
     required this.id,
@@ -274,6 +380,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     required this.subcategory,
     required this.notes,
     required this.paymentMethod,
+    required this.paidToName,
+    required this.paidToPhone,
+    required this.paidToUpi,
+    required this.bankName,
     required this.createdAt,
   });
   @override
@@ -287,6 +397,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     map['subcategory'] = Variable<String>(subcategory);
     map['notes'] = Variable<String>(notes);
     map['payment_method'] = Variable<String>(paymentMethod);
+    map['paid_to_name'] = Variable<String>(paidToName);
+    map['paid_to_phone'] = Variable<String>(paidToPhone);
+    map['paid_to_upi'] = Variable<String>(paidToUpi);
+    map['bank_name'] = Variable<String>(bankName);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -301,6 +415,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       subcategory: Value(subcategory),
       notes: Value(notes),
       paymentMethod: Value(paymentMethod),
+      paidToName: Value(paidToName),
+      paidToPhone: Value(paidToPhone),
+      paidToUpi: Value(paidToUpi),
+      bankName: Value(bankName),
       createdAt: Value(createdAt),
     );
   }
@@ -319,6 +437,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       subcategory: serializer.fromJson<String>(json['subcategory']),
       notes: serializer.fromJson<String>(json['notes']),
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
+      paidToName: serializer.fromJson<String>(json['paidToName']),
+      paidToPhone: serializer.fromJson<String>(json['paidToPhone']),
+      paidToUpi: serializer.fromJson<String>(json['paidToUpi']),
+      bankName: serializer.fromJson<String>(json['bankName']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -334,6 +456,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
       'subcategory': serializer.toJson<String>(subcategory),
       'notes': serializer.toJson<String>(notes),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
+      'paidToName': serializer.toJson<String>(paidToName),
+      'paidToPhone': serializer.toJson<String>(paidToPhone),
+      'paidToUpi': serializer.toJson<String>(paidToUpi),
+      'bankName': serializer.toJson<String>(bankName),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -347,6 +473,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     String? subcategory,
     String? notes,
     String? paymentMethod,
+    String? paidToName,
+    String? paidToPhone,
+    String? paidToUpi,
+    String? bankName,
     DateTime? createdAt,
   }) => LedgerData(
     id: id ?? this.id,
@@ -357,6 +487,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     subcategory: subcategory ?? this.subcategory,
     notes: notes ?? this.notes,
     paymentMethod: paymentMethod ?? this.paymentMethod,
+    paidToName: paidToName ?? this.paidToName,
+    paidToPhone: paidToPhone ?? this.paidToPhone,
+    paidToUpi: paidToUpi ?? this.paidToUpi,
+    bankName: bankName ?? this.bankName,
     createdAt: createdAt ?? this.createdAt,
   );
   LedgerData copyWithCompanion(LedgerCompanion data) {
@@ -373,6 +507,12 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
           data.paymentMethod.present
               ? data.paymentMethod.value
               : this.paymentMethod,
+      paidToName:
+          data.paidToName.present ? data.paidToName.value : this.paidToName,
+      paidToPhone:
+          data.paidToPhone.present ? data.paidToPhone.value : this.paidToPhone,
+      paidToUpi: data.paidToUpi.present ? data.paidToUpi.value : this.paidToUpi,
+      bankName: data.bankName.present ? data.bankName.value : this.bankName,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -388,6 +528,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
           ..write('subcategory: $subcategory, ')
           ..write('notes: $notes, ')
           ..write('paymentMethod: $paymentMethod, ')
+          ..write('paidToName: $paidToName, ')
+          ..write('paidToPhone: $paidToPhone, ')
+          ..write('paidToUpi: $paidToUpi, ')
+          ..write('bankName: $bankName, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -403,6 +547,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
     subcategory,
     notes,
     paymentMethod,
+    paidToName,
+    paidToPhone,
+    paidToUpi,
+    bankName,
     createdAt,
   );
   @override
@@ -417,6 +565,10 @@ class LedgerData extends DataClass implements Insertable<LedgerData> {
           other.subcategory == this.subcategory &&
           other.notes == this.notes &&
           other.paymentMethod == this.paymentMethod &&
+          other.paidToName == this.paidToName &&
+          other.paidToPhone == this.paidToPhone &&
+          other.paidToUpi == this.paidToUpi &&
+          other.bankName == this.bankName &&
           other.createdAt == this.createdAt);
 }
 
@@ -429,6 +581,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
   final Value<String> subcategory;
   final Value<String> notes;
   final Value<String> paymentMethod;
+  final Value<String> paidToName;
+  final Value<String> paidToPhone;
+  final Value<String> paidToUpi;
+  final Value<String> bankName;
   final Value<DateTime> createdAt;
   const LedgerCompanion({
     this.id = const Value.absent(),
@@ -439,6 +595,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     this.subcategory = const Value.absent(),
     this.notes = const Value.absent(),
     this.paymentMethod = const Value.absent(),
+    this.paidToName = const Value.absent(),
+    this.paidToPhone = const Value.absent(),
+    this.paidToUpi = const Value.absent(),
+    this.bankName = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   LedgerCompanion.insert({
@@ -450,6 +610,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     this.subcategory = const Value.absent(),
     this.notes = const Value.absent(),
     this.paymentMethod = const Value.absent(),
+    this.paidToName = const Value.absent(),
+    this.paidToPhone = const Value.absent(),
+    this.paidToUpi = const Value.absent(),
+    this.bankName = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   static Insertable<LedgerData> custom({
@@ -461,6 +625,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     Expression<String>? subcategory,
     Expression<String>? notes,
     Expression<String>? paymentMethod,
+    Expression<String>? paidToName,
+    Expression<String>? paidToPhone,
+    Expression<String>? paidToUpi,
+    Expression<String>? bankName,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -472,6 +640,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
       if (subcategory != null) 'subcategory': subcategory,
       if (notes != null) 'notes': notes,
       if (paymentMethod != null) 'payment_method': paymentMethod,
+      if (paidToName != null) 'paid_to_name': paidToName,
+      if (paidToPhone != null) 'paid_to_phone': paidToPhone,
+      if (paidToUpi != null) 'paid_to_upi': paidToUpi,
+      if (bankName != null) 'bank_name': bankName,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -485,6 +657,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     Value<String>? subcategory,
     Value<String>? notes,
     Value<String>? paymentMethod,
+    Value<String>? paidToName,
+    Value<String>? paidToPhone,
+    Value<String>? paidToUpi,
+    Value<String>? bankName,
     Value<DateTime>? createdAt,
   }) {
     return LedgerCompanion(
@@ -496,6 +672,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
       subcategory: subcategory ?? this.subcategory,
       notes: notes ?? this.notes,
       paymentMethod: paymentMethod ?? this.paymentMethod,
+      paidToName: paidToName ?? this.paidToName,
+      paidToPhone: paidToPhone ?? this.paidToPhone,
+      paidToUpi: paidToUpi ?? this.paidToUpi,
+      bankName: bankName ?? this.bankName,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -527,6 +707,18 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
     if (paymentMethod.present) {
       map['payment_method'] = Variable<String>(paymentMethod.value);
     }
+    if (paidToName.present) {
+      map['paid_to_name'] = Variable<String>(paidToName.value);
+    }
+    if (paidToPhone.present) {
+      map['paid_to_phone'] = Variable<String>(paidToPhone.value);
+    }
+    if (paidToUpi.present) {
+      map['paid_to_upi'] = Variable<String>(paidToUpi.value);
+    }
+    if (bankName.present) {
+      map['bank_name'] = Variable<String>(bankName.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -544,6 +736,10 @@ class LedgerCompanion extends UpdateCompanion<LedgerData> {
           ..write('subcategory: $subcategory, ')
           ..write('notes: $notes, ')
           ..write('paymentMethod: $paymentMethod, ')
+          ..write('paidToName: $paidToName, ')
+          ..write('paidToPhone: $paidToPhone, ')
+          ..write('paidToUpi: $paidToUpi, ')
+          ..write('bankName: $bankName, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -794,6 +990,10 @@ typedef $$LedgerTableCreateCompanionBuilder =
       Value<String> subcategory,
       Value<String> notes,
       Value<String> paymentMethod,
+      Value<String> paidToName,
+      Value<String> paidToPhone,
+      Value<String> paidToUpi,
+      Value<String> bankName,
       Value<DateTime> createdAt,
     });
 typedef $$LedgerTableUpdateCompanionBuilder =
@@ -806,6 +1006,10 @@ typedef $$LedgerTableUpdateCompanionBuilder =
       Value<String> subcategory,
       Value<String> notes,
       Value<String> paymentMethod,
+      Value<String> paidToName,
+      Value<String> paidToPhone,
+      Value<String> paidToUpi,
+      Value<String> bankName,
       Value<DateTime> createdAt,
     });
 
@@ -854,6 +1058,26 @@ class $$LedgerTableFilterComposer extends Composer<_$Database, $LedgerTable> {
 
   ColumnFilters<String> get paymentMethod => $composableBuilder(
     column: $table.paymentMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paidToName => $composableBuilder(
+    column: $table.paidToName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paidToPhone => $composableBuilder(
+    column: $table.paidToPhone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paidToUpi => $composableBuilder(
+    column: $table.paidToUpi,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bankName => $composableBuilder(
+    column: $table.bankName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -911,6 +1135,26 @@ class $$LedgerTableOrderingComposer extends Composer<_$Database, $LedgerTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get paidToName => $composableBuilder(
+    column: $table.paidToName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paidToPhone => $composableBuilder(
+    column: $table.paidToPhone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paidToUpi => $composableBuilder(
+    column: $table.paidToUpi,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bankName => $composableBuilder(
+    column: $table.bankName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -954,6 +1198,22 @@ class $$LedgerTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get paidToName => $composableBuilder(
+    column: $table.paidToName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paidToPhone => $composableBuilder(
+    column: $table.paidToPhone,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paidToUpi =>
+      $composableBuilder(column: $table.paidToUpi, builder: (column) => column);
+
+  GeneratedColumn<String> get bankName =>
+      $composableBuilder(column: $table.bankName, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
@@ -994,6 +1254,10 @@ class $$LedgerTableTableManager
                 Value<String> subcategory = const Value.absent(),
                 Value<String> notes = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
+                Value<String> paidToName = const Value.absent(),
+                Value<String> paidToPhone = const Value.absent(),
+                Value<String> paidToUpi = const Value.absent(),
+                Value<String> bankName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => LedgerCompanion(
                 id: id,
@@ -1004,6 +1268,10 @@ class $$LedgerTableTableManager
                 subcategory: subcategory,
                 notes: notes,
                 paymentMethod: paymentMethod,
+                paidToName: paidToName,
+                paidToPhone: paidToPhone,
+                paidToUpi: paidToUpi,
+                bankName: bankName,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -1016,6 +1284,10 @@ class $$LedgerTableTableManager
                 Value<String> subcategory = const Value.absent(),
                 Value<String> notes = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
+                Value<String> paidToName = const Value.absent(),
+                Value<String> paidToPhone = const Value.absent(),
+                Value<String> paidToUpi = const Value.absent(),
+                Value<String> bankName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => LedgerCompanion.insert(
                 id: id,
@@ -1026,6 +1298,10 @@ class $$LedgerTableTableManager
                 subcategory: subcategory,
                 notes: notes,
                 paymentMethod: paymentMethod,
+                paidToName: paidToName,
+                paidToPhone: paidToPhone,
+                paidToUpi: paidToUpi,
+                bankName: bankName,
                 createdAt: createdAt,
               ),
           withReferenceMapper:

@@ -12,5 +12,6 @@ class Ledger extends Table {
   TextColumn get paidToName => text().withDefault(const Constant(''))();
   TextColumn get paidToPhone => text().withDefault(const Constant(''))();
   TextColumn get paidToUpi => text().withDefault(const Constant(''))();
+  TextColumn get bankName => text().withDefault(const Constant(''))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

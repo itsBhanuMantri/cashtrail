@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../repositories/ledget_repository.dart';
+import '../repositories/ledger_repository.dart';
 import 'category_provider.dart';
 import 'ledger_provider.dart';
 
@@ -10,6 +10,10 @@ class FormState {
   final String? subcategory;
   final String? notes;
   final String? paymentMethod;
+  final String? bankName;
+  final String? paidToName;
+  final String? paidToPhone;
+  final String? paidToUpi;
 
   FormState({
     this.amount,
@@ -17,6 +21,10 @@ class FormState {
     this.subcategory,
     this.notes,
     this.paymentMethod,
+    this.bankName,
+    this.paidToName,
+    this.paidToPhone,
+    this.paidToUpi,
   });
 
   FormState copyWith({
@@ -25,6 +33,10 @@ class FormState {
     String? subcategory,
     String? notes,
     String? paymentMethod,
+    String? bankName,
+    String? paidToName,
+    String? paidToPhone,
+    String? paidToUpi,
   }) {
     return FormState(
       amount: amount ?? this.amount,
@@ -32,6 +44,10 @@ class FormState {
       subcategory: subcategory ?? this.subcategory,
       notes: notes ?? this.notes,
       paymentMethod: paymentMethod ?? this.paymentMethod,
+      bankName: bankName ?? this.bankName,
+      paidToName: paidToName ?? this.paidToName,
+      paidToPhone: paidToPhone ?? this.paidToPhone,
+      paidToUpi: paidToUpi ?? this.paidToUpi,
     );
   }
 }
@@ -71,6 +87,22 @@ class FormNotifier extends Notifier<FormState> {
     state = state.copyWith(paymentMethod: paymentMethod);
   }
 
+  void setBankName(String bankName) {
+    state = state.copyWith(bankName: bankName);
+  }
+
+  void setPaidToName(String paidToName) {
+    state = state.copyWith(paidToName: paidToName);
+  }
+
+  void setPaidToPhone(String paidToPhone) {
+    state = state.copyWith(paidToPhone: paidToPhone);
+  }
+
+  void setPaidToUpi(String paidToUpi) {
+    state = state.copyWith(paidToUpi: paidToUpi);
+  }
+
   Future<void> cashIn() async {
     if (state.amount == null || state.amount!.isEmpty) {
       print('amount is null or empty');
@@ -93,6 +125,7 @@ class FormNotifier extends Notifier<FormState> {
       subcategory: state.subcategory ?? '',
       notes: state.notes ?? '',
       paymentMethod: state.paymentMethod!,
+      bankName: state.bankName ?? '',
     );
 
     state = state.copyWith(

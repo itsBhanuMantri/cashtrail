@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../db/database.dart';
+import '../services.dart';
 
 enum TransactionType { credit, debit }
 
@@ -8,11 +9,41 @@ class LedgerRepository {
   LedgerRepository();
 
   Future<List<LedgerData>> fetchAll() async {
-    final db = Database();
+    final db = sl.get<Database>();
     final list =
         await (db.select(db.ledger)
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)])).get();
     return list;
+  }
+
+  Future<LedgerData?> fetchRecentOneByPaidToName(String paidToName) async {
+    final db = sl.get<Database>();
+    final item =
+        await (db.select(db.ledger)
+              ..where((tbl) => tbl.paidToName.equals(paidToName))
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
+            .getSingle();
+    return item;
+  }
+
+  Future<LedgerData?> fetchRecentOneByUpi(String upiId) async {
+    final db = sl.get<Database>();
+    final item =
+        await (db.select(db.ledger)
+              ..where((tbl) => tbl.paidToUpi.equals(upiId))
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
+            .getSingle();
+    return item;
+  }
+
+  Future<LedgerData?> fetchRecentOneByPhone(String phone) async {
+    final db = sl.get<Database>();
+    final item =
+        await (db.select(db.ledger)
+              ..where((tbl) => tbl.paidToPhone.equals(phone))
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
+            .getSingle();
+    return item;
   }
 
   Future<void> cashOut({
@@ -21,8 +52,12 @@ class LedgerRepository {
     required String subcategory,
     required String paymentMethod,
     String? notes,
+    String? bankName,
+    String? paidToName,
+    String? paidToPhone,
+    String? paidToUpi,
   }) async {
-    final db = Database();
+    final db = sl.get<Database>();
     final balance = await getBalance(TransactionType.debit, amount);
     await db
         .into(db.ledger)
@@ -35,6 +70,10 @@ class LedgerRepository {
             subcategory: Value(subcategory),
             notes: Value(notes ?? ''),
             paymentMethod: Value(paymentMethod),
+            bankName: Value(bankName ?? ''),
+            paidToName: Value(paidToName ?? ''),
+            paidToPhone: Value(paidToPhone ?? ''),
+            paidToUpi: Value(paidToUpi ?? ''),
           ),
         );
   }
@@ -45,8 +84,12 @@ class LedgerRepository {
     required String subcategory,
     required String paymentMethod,
     String? notes,
+    String? bankName,
+    String? paidToName,
+    String? paidToPhone,
+    String? paidToUpi,
   }) async {
-    final db = Database();
+    final db = sl.get<Database>();
     final balance = await getBalance(TransactionType.credit, amount);
     await db
         .into(db.ledger)
@@ -59,12 +102,16 @@ class LedgerRepository {
             subcategory: Value(subcategory),
             notes: Value(notes ?? ''),
             paymentMethod: Value(paymentMethod),
+            bankName: Value(bankName ?? ''),
+            paidToName: Value(paidToName ?? ''),
+            paidToPhone: Value(paidToPhone ?? ''),
+            paidToUpi: Value(paidToUpi ?? ''),
           ),
         );
   }
 
   Future<double> getBalance(TransactionType type, double amount) async {
-    final db = Database();
+    final db = sl.get<Database>();
     final rows = await db.select(db.ledger).get();
     double totalCredits = rows
         .where((row) => row.credit > 0)
@@ -84,7 +131,7 @@ class LedgerRepository {
   }
 
   Future<void> deleteTransaction(int id) async {
-    final db = Database();
+    final db = sl.get<Database>();
     await (db.delete(db.ledger)..where((tbl) => tbl.id.equals(id))).go();
   }
 
@@ -98,7 +145,7 @@ class LedgerRepository {
     required String notes,
     required String paymentMethod,
   }) async {
-    final db = Database();
+    final db = sl.get<Database>();
     await (db.update(db.ledger)..where((tbl) => tbl.id.equals(id))).write(
       LedgerCompanion(
         credit: Value(credit),

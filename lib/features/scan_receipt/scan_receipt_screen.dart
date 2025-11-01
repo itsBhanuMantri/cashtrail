@@ -45,13 +45,10 @@ class SharedFileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Center(
-                child:
-                    sharedFilePath == null
-                        ? const Text('No file shared yet')
-                        : Text('Received file URI:\n$sharedFilePath'),
-              ),
-              if (sharedFilePath != null) ImageFromContentUri(sharedFilePath!),
+              if (sharedFilePath == null)
+                Center(child: const Text('No file shared yet')),
+              if (sharedFilePath != null)
+                Center(child: ImageFromContentUri(sharedFilePath!)),
             ],
           ),
         ),

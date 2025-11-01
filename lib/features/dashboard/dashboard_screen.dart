@@ -126,7 +126,7 @@ class DashboardScreen extends ConsumerWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => CashOutWdiget(),
+                            builder: (context) => CashOutWidget(),
                           ),
                         );
                       },
