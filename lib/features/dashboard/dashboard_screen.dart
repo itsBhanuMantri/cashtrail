@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tailwind_palette/tailwind_palette.dart';
 
+import '../../core/widgets/common/transaction_list_item.dart';
 import '../../db/database.dart';
 import '../../providers/ledger_provider.dart';
 import '../transaction/edit_transaction_screen.dart';
 import '../transactions/transactions_screen.dart';
 import 'cash_summary.dart';
-import '../../core/widgets/common/transaction_list_item.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:tailwind_palette/tailwind_palette.dart';
 
 import '../../db/database.dart';
 import '../../providers/ledger_provider.dart';
@@ -17,13 +20,14 @@ class TransactionScreen extends ConsumerWidget {
     final isCredit = data.credit > 0;
     final amount = isCredit ? data.credit : data.debit;
     final transactionType = isCredit ? 'Credit' : 'Debit';
-    final transactionColor = isCredit ? Colors.green : Colors.red;
+    final transactionColor =
+        isCredit
+            ? TailwindPalette.green.shade600
+            : TailwindPalette.red.shade600;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transaction Details'),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
         elevation: 0,
         actions: [
           IconButton(
@@ -80,63 +84,119 @@ class TransactionScreen extends ConsumerWidget {
     Color color,
   ) {
     final isCredit = data.credit > 0;
-    return Card(
-      elevation: 8,
-      shadowColor: color.withOpacity(0.3),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
-          ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withOpacity(0.08),
+            color.withOpacity(0.04),
+            color.withOpacity(0.02),
+          ],
+          stops: const [0.0, 0.6, 1.0],
         ),
-        child: Column(
-          children: [
-            Icon(
-              isCredit ? Icons.arrow_upward : Icons.arrow_downward,
-              size: 48,
+        border: Border.all(color: color.withOpacity(0.12), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Icon with background
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: color.withOpacity(0.2), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              isCredit
+                  ? Icons.arrow_upward_rounded
+                  : Icons.arrow_downward_rounded,
+              size: 32,
               color: color,
             ),
-            const SizedBox(height: 16),
-            Text(
-              type,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
+          ),
+          const SizedBox(width: 20),
+          // Amount and details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  type.toUpperCase(),
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: color.withOpacity(0.9),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  NumberFormat.currency(
+                    symbol: '₹',
+                    decimalDigits: 2,
+                  ).format(amount),
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -1,
+                    height: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Balance: ${NumberFormat.currency(symbol: '\$', decimalDigits: 2).format(data.balance)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              NumberFormat.currency(
-                symbol: '\$',
-                decimalDigits: 2,
-              ).format(amount),
-              style: theme.textTheme.headlineMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Balance: ${NumberFormat.currency(symbol: '\$', decimalDigits: 2).format(data.balance)}',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildDetailsCard(BuildContext context, ThemeData theme) {
     return Card(
-      elevation: 4,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -192,7 +252,7 @@ class TransactionScreen extends ConsumerWidget {
 
   Widget _buildPaymentCard(BuildContext context, ThemeData theme) {
     return Card(
-      elevation: 4,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -229,7 +289,7 @@ class TransactionScreen extends ConsumerWidget {
 
   Widget _buildNotesCard(BuildContext context, ThemeData theme) {
     return Card(
-      elevation: 4,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -253,7 +313,9 @@ class TransactionScreen extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(
+                  0.3,
+                ),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: theme.colorScheme.outline.withOpacity(0.2),
@@ -332,7 +394,7 @@ class TransactionScreen extends ConsumerWidget {
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 'Are you sure you want to delete this transaction?',
@@ -342,7 +404,9 @@ class TransactionScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(
+                    0.3,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: theme.colorScheme.outline.withOpacity(0.2),
@@ -413,10 +477,13 @@ class TransactionScreen extends ConsumerWidget {
   Future<void> _deleteTransaction(BuildContext context, WidgetRef ref) async {
     try {
       // Show loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+      unawaited(
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (context) => const Center(child: CircularProgressIndicator()),
+        ),
       );
 
       // Delete the transaction
