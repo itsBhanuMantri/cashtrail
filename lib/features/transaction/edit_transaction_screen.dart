@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tailwind_palette/tailwind_palette.dart';
 
 import '../../core/components/app_text_field.dart';
-import '../../core/components/buttons/app_button.dart';
 import '../../core/components/buttons/app_text_button.dart';
 import '../../core/components/choice_chips.dart';
 import '../../core/config.dart';
-import '../../core/widgets/app_snackbar.dart';
 import '../../core/widgets/category_modal.dart';
 import '../../db/database.dart';
 import '../../providers/category_provider.dart';
@@ -83,8 +80,6 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Transaction'),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
         elevation: 0,
         actions: [
           if (_isLoading)

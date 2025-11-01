@@ -52,7 +52,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: TailwindPalette.blue.shade900,
+        ),
         fontFamily: fontFamily,
         textTheme: TextTheme(
           // title
@@ -134,7 +136,8 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: TailwindPalette.slate.shade100,
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.indigo,
+          // backgroundColor: Color(0xFF1E3A8A),
+          backgroundColor: TailwindPalette.blue.shade900,
           foregroundColor: Colors.white,
           // shadowColor: Colors.black.withValues(alpha: 1),
           // elevation: 2,

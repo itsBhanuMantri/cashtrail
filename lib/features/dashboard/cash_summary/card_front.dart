@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/utils/format_inr.dart';
-import '../../providers/ledger_provider.dart';
+import '../../../core/utils/format_inr.dart';
+import '../../../providers/ledger_provider.dart';
 
-class CashSummary extends ConsumerWidget {
-  const CashSummary({super.key});
+class CardFront extends ConsumerWidget {
+  const CardFront({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -159,13 +159,13 @@ class CashSummary extends ConsumerWidget {
                     Row(
                       children: [
                         Icon(
-                          Icons.account_circle_outlined,
+                          Icons.book_online_outlined,
                           color: Colors.white.withOpacity(0.7),
                           size: 14,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'CASH TRAIL',
+                          'main book'.toUpperCase(),
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 10,
@@ -193,64 +193,64 @@ class CashSummary extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // Credit Bar
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.arrow_upward_rounded,
-                        color: Colors.white.withOpacity(0.9),
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Credit',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.95),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    formatInr(income),
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.95),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Container(
-                height: 8,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: FractionallySizedBox(
-                  alignment: Alignment.centerLeft,
-                  widthFactor: maxAmount > 0 ? income / maxAmount : 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 4),
+        //   child: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       Row(
+        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //         children: [
+        //           Row(
+        //             children: [
+        //               Icon(
+        //                 Icons.arrow_upward_rounded,
+        //                 color: Colors.white.withOpacity(0.9),
+        //                 size: 14,
+        //               ),
+        //               const SizedBox(width: 4),
+        //               Text(
+        //                 'Credit',
+        //                 style: TextStyle(
+        //                   color: Colors.white.withOpacity(0.95),
+        //                   fontSize: 14,
+        //                   fontWeight: FontWeight.w600,
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //           Text(
+        //             formatInr(income),
+        //             style: TextStyle(
+        //               color: Colors.white.withOpacity(0.95),
+        //               fontSize: 14,
+        //               fontWeight: FontWeight.w600,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //       const SizedBox(height: 4),
+        //       Container(
+        //         height: 8,
+        //         width: double.infinity,
+        //         decoration: BoxDecoration(
+        //           color: Colors.white.withOpacity(0.2),
+        //           borderRadius: BorderRadius.circular(4),
+        //         ),
+        //         child: FractionallySizedBox(
+        //           alignment: Alignment.centerLeft,
+        //           widthFactor: maxAmount > 0 ? income / maxAmount : 0,
+        //           child: Container(
+        //             decoration: BoxDecoration(
+        //               color: const Color(0xFF10B981),
+        //               borderRadius: BorderRadius.circular(4),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
 
         // Debit Bar
         Padding(

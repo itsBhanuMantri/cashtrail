@@ -7,7 +7,7 @@ import '../../db/database.dart';
 import '../../providers/ledger_provider.dart';
 import '../transaction/edit_transaction_screen.dart';
 import '../transactions/transactions_screen.dart';
-import 'cash_summary.dart';
+import 'cash_summary/cash_summary.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -17,7 +17,7 @@ class DashboardScreen extends ConsumerWidget {
     final ledgerState = ref.watch(ledgerProvider);
     final items = (ledgerState.valueOrNull ?? []).take(3).toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('Cash Trail')),
+      appBar: AppBar(title: const Text('CashTrail')),
       body: Stack(
         children: [
           CustomScrollView(
