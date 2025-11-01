@@ -28,6 +28,10 @@ class TransactionScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transaction Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          onPressed: () => context.pop(),
+        ),
         elevation: 0,
         actions: [
           IconButton(

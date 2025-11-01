@@ -80,6 +80,10 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Transaction'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          onPressed: () => context.pop(),
+        ),
         elevation: 0,
         actions: [
           if (_isLoading)
