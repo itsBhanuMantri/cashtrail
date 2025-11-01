@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tailwind_palette/tailwind_palette.dart';
 
 import '../../core/components/app_text_field.dart';
+import '../../core/components/buttons/app_button.dart';
 import '../../core/components/buttons/app_text_button.dart';
 import '../../core/components/choice_chips.dart';
 import '../../core/config.dart';
+import '../../core/widgets/app_snackbar.dart';
 import '../../core/widgets/category_modal.dart';
 import '../../db/database.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/form_provider.dart';
 import '../../providers/ledger_provider.dart';
 import '../../repositories/ledger_repository.dart';
 
@@ -49,12 +53,12 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     if (widget.data.credit > 0) {
       _transactionType = 'credit';
       _amountController = TextEditingController(
-        text: widget.data.credit.toString(),
+        text: widget.data.credit == 0 ? '' : widget.data.credit.toString(),
       );
     } else {
       _transactionType = 'debit';
       _amountController = TextEditingController(
-        text: widget.data.debit.toString(),
+        text: widget.data.debit == 0 ? '' : widget.data.debit.toString(),
       );
     }
 
@@ -173,7 +177,8 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
 
   Widget _buildTransactionTypeCard(ThemeData theme) {
     return Card(
-      elevation: 4,
+      // elevation: 0,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -297,7 +302,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
           isRequired: true,
           action: AppTextButton.small(
             onPressed: () {
-              showCategoryModal(context).then((value) {
+              showCategoryModal(context, 'Category').then((value) {
                 if (value != null) {
                   ref.read(categoryProvider.notifier).addCategory(value);
                 }
@@ -337,7 +342,10 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                 );
                 return;
               }
-              showCategoryModal(context).then((value) {
+              showCategoryModal(
+                context,
+                'Subcategory for $_selectedCategory',
+              ).then((value) {
                 if (value != null) {
                   ref
                       .read(categoryProvider.notifier)
@@ -423,6 +431,39 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
   }
 
   Widget _buildActionButtons(ThemeData theme) {
+    if (widget.data.id == -1) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _createTransaction,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                        : const Text('Create Transaction'),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Row(
       children: [
         Expanded(
@@ -440,7 +481,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: ElevatedButton(
-            onPressed: _isLoading ? null : _saveTransaction,
+            onPressed: _isLoading ? null : _updateTransaction,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -464,7 +505,49 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     );
   }
 
-  Future<void> _saveTransaction() async {
+  void _createTransaction() async {
+    if (_amountController.text.isEmpty) {
+      _showErrorSnackBar('Please enter an amount');
+      return;
+    }
+
+    final amount = double.tryParse(_amountController.text);
+    if (amount == null || amount <= 0) {
+      _showErrorSnackBar('Please enter a valid amount');
+      return;
+    }
+
+    if (_selectedCategory == null) {
+      _showErrorSnackBar('Please select a category');
+      return;
+    }
+
+    if (_selectedPaymentMethod == null) {
+      _showErrorSnackBar('Please select a payment method');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final formStateNotifier = ref.read(formProvider.notifier);
+    formStateNotifier.setAmount(_amountController.text);
+    formStateNotifier.setCategory(_selectedCategory!);
+    formStateNotifier.setSubcategory(_selectedSubcategory!);
+    formStateNotifier.setPaymentMethod(_selectedPaymentMethod!);
+    formStateNotifier.setNotes(_notesController.text);
+    if (_transactionType == 'credit') {
+      await formStateNotifier.cashIn();
+    } else if (_transactionType == 'debit') {
+      await formStateNotifier.cashOut();
+    }
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _updateTransaction() async {
     if (_amountController.text.isEmpty) {
       _showErrorSnackBar('Please enter an amount');
       return;

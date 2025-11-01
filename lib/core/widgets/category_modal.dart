@@ -174,7 +174,7 @@ class _CategoryDialogState extends ConsumerState<CategoryDialog> {
   }
 }
 
-Future<String?> showCategoryModal(BuildContext context) async {
+Future<String?> showCategoryModal(BuildContext context, String title) async {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -182,13 +182,14 @@ Future<String?> showCategoryModal(BuildContext context) async {
       borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
     ),
     builder: (context) {
-      return CategoryModal();
+      return CategoryModal(title: title);
     },
   );
 }
 
 class CategoryModal extends ConsumerStatefulWidget {
-  const CategoryModal({super.key});
+  final String title;
+  const CategoryModal({super.key, required this.title});
 
   @override
   ConsumerState<CategoryModal> createState() => _CategoryModalState();
@@ -221,7 +222,7 @@ class _CategoryModalState extends ConsumerState<CategoryModal> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Text('Add New Category', style: textTheme.titleMedium),
+                  child: Text(widget.title, style: textTheme.titleMedium),
                 ),
                 Spacer(),
                 IconButton(
@@ -244,7 +245,6 @@ class _CategoryModalState extends ConsumerState<CategoryModal> {
                     controller: categoryController,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (value) {
-                      print('bhanu submitted $value');
                       if (value.isNotEmpty) {
                         Navigator.of(context).pop(value);
                       }

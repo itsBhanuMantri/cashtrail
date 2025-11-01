@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tailwind_palette/tailwind_palette.dart';
 
+import '../../db/database.dart';
 import '../../providers/ledger_provider.dart';
-import '../cash_in/cash_in_widget.dart';
-import '../cash_out/cash_out_widget.dart';
+import '../transaction/edit_transaction_screen.dart';
 import '../transactions/transactions_screen.dart';
 import 'cash_summary.dart';
 import '../../core/widgets/common/transaction_list_item.dart';
@@ -106,7 +106,24 @@ class DashboardScreen extends ConsumerWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => CashInWidget(),
+                            builder:
+                                (context) => EditTransactionScreen(
+                                  data: LedgerData(
+                                    id: -1,
+                                    credit: 0,
+                                    debit: 0,
+                                    balance: 0,
+                                    createdAt: DateTime.now(),
+                                    category: '',
+                                    subcategory: '',
+                                    notes: '',
+                                    paymentMethod: '',
+                                    paidToName: '',
+                                    paidToPhone: '',
+                                    paidToUpi: '',
+                                    bankName: '',
+                                  ),
+                                ),
                           ),
                         );
                       },
@@ -117,29 +134,29 @@ class DashboardScreen extends ConsumerWidget {
                           Colors.green.shade800,
                         ),
                       ),
-                      child: const Text('CASH IN'),
+                      child: const Text('Create Transaction'),
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CashOutWidget(),
-                          ),
-                        );
-                      },
-                      style: Theme.of(
-                        context,
-                      ).elevatedButtonTheme.style?.copyWith(
-                        backgroundColor: WidgetStateProperty.all(
-                          Colors.red.shade800,
-                        ),
-                      ),
-                      child: Text('CASH OUT'),
-                    ),
-                  ),
+                  // SizedBox(width: 16),
+                  // Expanded(
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       Navigator.of(context).push(
+                  //         MaterialPageRoute(
+                  //           builder: (context) => CashOutWidget(),
+                  //         ),
+                  //       );
+                  //     },
+                  //     style: Theme.of(
+                  //       context,
+                  //     ).elevatedButtonTheme.style?.copyWith(
+                  //       backgroundColor: WidgetStateProperty.all(
+                  //         Colors.red.shade800,
+                  //       ),
+                  //     ),
+                  //     child: Text('CASH OUT'),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
